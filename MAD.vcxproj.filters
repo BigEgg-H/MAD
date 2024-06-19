@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\core">
+      <UniqueIdentifier>{ffcff948-8e23-459d-ad91-9b9dc1e925ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\base">
+      <UniqueIdentifier>{7808762c-8884-4b81-96a9-799fd43b1cab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\engine">
+      <UniqueIdentifier>{60c0b707-4592-40ef-ae29-5b59753da25f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\core\protocol">
+      <UniqueIdentifier>{a794ca78-e8b8-476b-a93d-12f75ea6ecd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\templates">
+      <UniqueIdentifier>{324df591-7b31-46e5-8866-2203c4370d71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\core\interface">
+      <UniqueIdentifier>{978da07b-5877-4050-b9b5-8db41aef75b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -20,26 +38,26 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mad_source\mad_include\core\protocol\mad_protocol_base.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="mad_source\mad_include\core\handshake\mad_handshake_base.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="mad_source\mad_include\core\mad_core.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="mad_source\mad_include\base\mad_base.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="mad_source\mad_include\mad.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="mad_source\template\mad_templates.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="mad_source\mad_include\base\mad_base.h">
+      <Filter>头文件\base</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\mad_core.h">
+      <Filter>头文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\protocol\mad_protocol_base.h">
+      <Filter>头文件\core\protocol</Filter>
     </ClInclude>
     <ClInclude Include="mad_source\mad_include\engine\mad_engine.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\template\mad_templates.h">
+      <Filter>头文件\templates</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\interface\mad_interface.h">
+      <Filter>头文件\core\interface</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
