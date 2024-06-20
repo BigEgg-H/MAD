@@ -28,7 +28,9 @@
     <ClInclude Include="mad_source\mad_include\core\protocol\mad_protocol_base.h" />
     <ClInclude Include="mad_source\mad_include\engine\mad_engine.h" />
     <ClInclude Include="mad_source\mad_include\mad.h" />
-    <ClInclude Include="mad_source\template\mad_templates.h" />
+    <ClInclude Include="mad_source\template\empty\mad_template_empty.h" />
+    <ClInclude Include="mad_source\template\std_mp\mad_template_std_mp.h" />
+    <ClInclude Include="mad_source\template\std_pc\mad_template_std_pc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

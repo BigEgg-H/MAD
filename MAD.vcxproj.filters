@@ -31,6 +31,15 @@
     <Filter Include="头文件\core\interface">
       <UniqueIdentifier>{978da07b-5877-4050-b9b5-8db41aef75b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\templates\empty">
+      <UniqueIdentifier>{884ed229-6a62-439c-8922-e4eb4fbb109b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\templates\std_mp">
+      <UniqueIdentifier>{f8a27b45-6244-4330-80f8-f179edbf6a22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\templates\std_pc">
+      <UniqueIdentifier>{b6d94395-2bca-49c2-b23f-1302532ecabf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -53,11 +62,17 @@
     <ClInclude Include="mad_source\mad_include\engine\mad_engine.h">
       <Filter>头文件\engine</Filter>
     </ClInclude>
-    <ClInclude Include="mad_source\template\mad_templates.h">
-      <Filter>头文件\templates</Filter>
-    </ClInclude>
     <ClInclude Include="mad_source\mad_include\core\interface\mad_interface.h">
       <Filter>头文件\core\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\template\empty\mad_template_empty.h">
+      <Filter>头文件\templates\empty</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\template\std_mp\mad_template_std_mp.h">
+      <Filter>头文件\templates\std_mp</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\template\std_pc\mad_template_std_pc.h">
+      <Filter>头文件\templates\std_pc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
