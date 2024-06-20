@@ -14,3 +14,12 @@
 /**************************************************************************/
 
 #pragma once
+
+typedef int MADErr;
+
+#define MAD_ERR_FAIL_UNKONW -1
+#define MAD_ERR_OK 0
+
+
+
+
