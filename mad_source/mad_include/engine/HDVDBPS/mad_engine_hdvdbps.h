@@ -15,13 +15,30 @@
 
 #pragma once
 
-//DO NOT CHANGE THIS CODE!
-#define MADC_PROTOCOL_VERSION 240619
-
-typedef unsigned long MADCVersion;
-
-class MADCProtocol
+class MADEBPSProtocol:public MADCProtocol
 {
 public:
-	virtual MADCVersion GetVersionID() = 0;
+	MADCVersion GetVersionID() { return MADC_PROTOCOL_VERSION; }
+private:
+
 };
+
+class MADEBPSInterface:public MADCInterface<MADEBPSProtocol>
+{
+public:
+	MADEBPSInterface();
+	~MADEBPSInterface();
+
+private:
+
+};
+
+inline MADEBPSInterface::MADEBPSInterface():MADCInterface<MADEBPSProtocol>(MADC_PROTOCOL_VERSION)
+{
+
+}
+
+MADEBPSInterface::~MADEBPSInterface()
+{
+
+}

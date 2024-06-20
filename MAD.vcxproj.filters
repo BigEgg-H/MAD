@@ -40,6 +40,9 @@
     <Filter Include="头文件\templates\std_pc">
       <UniqueIdentifier>{b6d94395-2bca-49c2-b23f-1302532ecabf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\engine\HDVDBPS">
+      <UniqueIdentifier>{546776ef-df15-4dac-9a57-84cb0fd2f8a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="mad_source\template\std_pc\mad_template_std_pc.h">
       <Filter>头文件\templates\std_pc</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\engine\HDVDBPS\mad_engine_hdvdbps.h">
+      <Filter>头文件\engine\HDVDBPS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

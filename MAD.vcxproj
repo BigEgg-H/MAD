@@ -26,6 +26,7 @@
     <ClInclude Include="mad_source\mad_include\core\interface\mad_interface.h" />
     <ClInclude Include="mad_source\mad_include\core\mad_core.h" />
     <ClInclude Include="mad_source\mad_include\core\protocol\mad_protocol_base.h" />
+    <ClInclude Include="mad_source\mad_include\engine\HDVDBPS\mad_engine_hdvdbps.h" />
     <ClInclude Include="mad_source\mad_include\engine\mad_engine.h" />
     <ClInclude Include="mad_source\mad_include\mad.h" />
     <ClInclude Include="mad_source\template\empty\mad_template_empty.h" />
