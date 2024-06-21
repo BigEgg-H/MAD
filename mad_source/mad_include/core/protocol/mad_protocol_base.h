@@ -15,13 +15,52 @@
 
 #pragma once
 
-//DO NOT CHANGE THIS CODE!
-#define MADC_PROTOCOL_VERSION 240619
+static const MADVERSION MADCGlobalProtocolVersion = MADVERSION(1, 0, 0, 0);
 
-typedef unsigned long MADCVersion;
-
-class MADCProtocol
+struct MADCProtocol
 {
-public:
-	virtual MADCVersion GetVersionID() = 0;
+	MADVERSION Version; 
+
+	virtual bool ShakeHands() = 0;
+
+	MADCProtocol(MADVERSION _ver) :Version(_ver){}
+};
+
+struct MADCProtocolHDVDBPS:public MADCProtocol
+{
+	MADAPI DrawBullet = nullptr;
+
+	MADCProtocolHDVDBPS():MADCProtocol(MADCGlobalProtocolVersion){}
+
+	bool ShakeHands() override {
+		if (DrawBullet == nullptr)
+		{
+			return false;
+		}
+		return true;
+	}
+};
+
+struct MADCProtocolTIGAS :public MADCProtocol
+{
+
+
+	MADCProtocolTIGAS() :MADCProtocol(MADCGlobalProtocolVersion) {}
+
+	bool ShakeHands() override {
+
+		return true;
+	}
+};
+
+struct MADCProtocolGGSCCS :public MADCProtocol
+{
+
+
+	MADCProtocolGGSCCS() :MADCProtocol(MADCGlobalProtocolVersion) {}
+
+	bool ShakeHands() override {
+
+		return true;
+	}
 };

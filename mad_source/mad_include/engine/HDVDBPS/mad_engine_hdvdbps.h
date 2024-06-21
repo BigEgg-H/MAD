@@ -15,30 +15,27 @@
 
 #pragma once
 
-class MADEBPSProtocol:public MADCProtocol
+class MADEHDVDBPS
 {
 public:
-	MADCVersion GetVersionID() { return MADC_PROTOCOL_VERSION; }
-private:
+	MADErr Initialize(MADCProtocolHDVDBPS& _protocol);
 
-};
-
-class MADEBPSInterface:public MADCInterface<MADEBPSProtocol>
-{
-public:
-	MADEBPSInterface();
-	~MADEBPSInterface();
+	void Shoot() {
+		draw(nullptr, nullptr);
+	};
 
 private:
-
+	MADAPI draw;
 };
 
-inline MADEBPSInterface::MADEBPSInterface():MADCInterface<MADEBPSProtocol>(MADC_PROTOCOL_VERSION)
+MADErr MADEHDVDBPS::Initialize(MADCProtocolHDVDBPS& _protocol)
 {
+	if (!_protocol.ShakeHands())
+	{
+		return MAD_ERR_FAIL_PROTOCOL_FEATURE_DISABLE;
+	}
 
-}
+	draw = _protocol.DrawBullet;
 
-MADEBPSInterface::~MADEBPSInterface()
-{
-
+	return MAD_ERR_OK;
 }

@@ -28,9 +28,6 @@
     <Filter Include="头文件\templates">
       <UniqueIdentifier>{324df591-7b31-46e5-8866-2203c4370d71}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\core\interface">
-      <UniqueIdentifier>{978da07b-5877-4050-b9b5-8db41aef75b5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\templates\empty">
       <UniqueIdentifier>{884ed229-6a62-439c-8922-e4eb4fbb109b}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,12 @@
     </Filter>
     <Filter Include="头文件\engine\HDVDBPS">
       <UniqueIdentifier>{546776ef-df15-4dac-9a57-84cb0fd2f8a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\engine\GGSCCS">
+      <UniqueIdentifier>{f30f155f-7d55-4c8e-a8a0-a71f6012a92c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\engine\TIGAS">
+      <UniqueIdentifier>{3442cd05-a35a-4add-a102-b6cced2cc81f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,9 +68,6 @@
     <ClInclude Include="mad_source\mad_include\engine\mad_engine.h">
       <Filter>头文件\engine</Filter>
     </ClInclude>
-    <ClInclude Include="mad_source\mad_include\core\interface\mad_interface.h">
-      <Filter>头文件\core\interface</Filter>
-    </ClInclude>
     <ClInclude Include="mad_source\template\empty\mad_template_empty.h">
       <Filter>头文件\templates\empty</Filter>
     </ClInclude>
@@ -79,6 +79,12 @@
     </ClInclude>
     <ClInclude Include="mad_source\mad_include\engine\HDVDBPS\mad_engine_hdvdbps.h">
       <Filter>头文件\engine\HDVDBPS</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\engine\GGSCCS\mad_engine_ggsccs.h">
+      <Filter>头文件\engine\GGSCCS</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\engine\TIGAS\mad_engine_tigas.h">
+      <Filter>头文件\engine\TIGAS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

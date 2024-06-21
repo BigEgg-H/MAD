@@ -15,4 +15,4 @@
 
 #pragma once
 
-#include "interface/mad_interface.h"
+#include "protocol/mad_protocol_base.h"
