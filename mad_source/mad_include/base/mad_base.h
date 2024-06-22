@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <vector>
+
 typedef int MADErr;
 
 #define MAD_ERR_FAIL_UNKONW -1
@@ -22,7 +24,8 @@ typedef int MADErr;
 #define MAD_ERR_FAIL_VERSION_DISABLE 1
 #define MAD_ERR_FAIL_PROTOCOL_FEATURE_DISABLE 2
 
-typedef void (*MADAPI)(void* para_in, void** para_out);
+typedef void* MADUSERDATA;
+typedef void (*MADAPI)(MADUSERDATA para[]);
 
 struct MADVERSION {
 	unsigned int Major;

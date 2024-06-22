@@ -18,24 +18,20 @@
 class MADEHDVDBPS
 {
 public:
-	MADErr Initialize(MADCProtocolHDVDBPS& _protocol);
-
-	void Shoot() {
-		draw(nullptr, nullptr);
-	};
+	MADErr Initialize(MADCProtocolHDVDBPS& _protocol, MADETIGAS* _GAS);
 
 private:
-	MADAPI draw;
+	MADETIGAS* GAS = nullptr;
 };
 
-MADErr MADEHDVDBPS::Initialize(MADCProtocolHDVDBPS& _protocol)
+MADErr MADEHDVDBPS::Initialize(MADCProtocolHDVDBPS& _protocol, MADETIGAS* _GAS)
 {
+	GAS = _GAS;
+
 	if (!_protocol.ShakeHands())
 	{
 		return MAD_ERR_FAIL_PROTOCOL_FEATURE_DISABLE;
 	}
-
-	draw = _protocol.DrawBullet;
 
 	return MAD_ERR_OK;
 }
