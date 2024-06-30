@@ -46,10 +46,112 @@
     <Filter Include="头文件\engine\TIGAS">
       <UniqueIdentifier>{3442cd05-a35a-4add-a102-b6cced2cc81f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\core\lua">
+      <UniqueIdentifier>{c33805b6-e5d7-42bf-9aa1-d2b0a7333788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\core\lua\source">
+      <UniqueIdentifier>{620c8fb6-7df9-4865-893d-2a79ca11460d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lapi.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lauxlib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lbaselib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lcode.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lcorolib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lctype.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\ldblib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\ldebug.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\ldo.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\ldump.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lfunc.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lgc.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\linit.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\liolib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\llex.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lmathlib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lmem.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\loadlib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lobject.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lopcodes.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\loslib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lparser.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lstate.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lstring.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lstrlib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\ltable.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\ltablib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\ltm.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lundump.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lutf8lib.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lvm.c">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClCompile>
+    <ClCompile Include="mad_source\mad_include\core\lua\lua_source\lzio.c">
+      <Filter>头文件\core\lua\source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +187,93 @@
     </ClInclude>
     <ClInclude Include="mad_source\mad_include\engine\TIGAS\mad_engine_tigas.h">
       <Filter>头文件\engine\TIGAS</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\mad_lua.h">
+      <Filter>头文件\core\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lapi.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lauxlib.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lcode.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lctype.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\ldebug.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\ldo.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lfunc.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lgc.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\ljumptab.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\llex.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\llimits.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lmem.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lobject.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lopcodes.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lopnames.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lparser.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lprefix.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lstate.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lstring.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\ltable.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\ltm.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lua.hpp">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\luaconf.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lualib.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lundump.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lvm.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lzio.h">
+      <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lua.h">
+      <Filter>头文件\core\lua\source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

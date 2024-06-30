@@ -15,5 +15,4 @@
 
 #pragma once
 
-#include "lua/mad_lua.h"
-#include "protocol/mad_protocol_base.h"
+#include "lua_source/lua.hpp"
