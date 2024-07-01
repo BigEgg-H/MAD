@@ -85,6 +85,7 @@
     <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lzio.h" />
     <ClInclude Include="mad_source\mad_include\core\lua\mad_lua.h" />
     <ClInclude Include="mad_source\mad_include\core\mad_core.h" />
+    <ClInclude Include="mad_source\mad_include\core\math\mad_math.h" />
     <ClInclude Include="mad_source\mad_include\core\protocol\mad_protocol_base.h" />
     <ClInclude Include="mad_source\mad_include\engine\GGSCCS\mad_engine_ggsccs.h" />
     <ClInclude Include="mad_source\mad_include\engine\HDVDBPS\mad_engine_hdvdbps.h" />

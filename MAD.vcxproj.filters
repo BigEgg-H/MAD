@@ -52,6 +52,12 @@
     <Filter Include="头文件\core\lua\source">
       <UniqueIdentifier>{620c8fb6-7df9-4865-893d-2a79ca11460d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\core\lua\math">
+      <UniqueIdentifier>{66715acc-e941-47cc-ae83-a4bf82ee391e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\core\lua\math\source">
+      <UniqueIdentifier>{df24aa36-afc9-4b65-ab2c-994c13239e63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -274,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="mad_source\mad_include\core\lua\lua_source\lua.h">
       <Filter>头文件\core\lua\source</Filter>
+    </ClInclude>
+    <ClInclude Include="mad_source\mad_include\core\math\mad_math.h">
+      <Filter>头文件\core\lua\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
