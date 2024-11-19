@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\ThirdParty">
+      <UniqueIdentifier>{885f9f83-2145-4d2b-9990-8a504b2f8921}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ThirdParty\LuaSource">
+      <UniqueIdentifier>{99dcbafb-adb7-45d0-9bd8-12dea0eb0888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ThirdParty">
+      <UniqueIdentifier>{d4bbb4c3-4a4f-40df-9114-6560a4553280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ThirdParty\LuaSource">
+      <UniqueIdentifier>{8a6d957f-4fbf-493f-938c-e06366a8016f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\MAD">
+      <UniqueIdentifier>{3672707f-9bde-45e3-802b-b7693c065cf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MAD">
+      <UniqueIdentifier>{f464bf89-c6c8-4c41-b7c0-1415e6d2513d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MAD\MADLua">
+      <UniqueIdentifier>{0110251b-7b0c-453e-9569-561693d811ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\MAD\MADLua">
+      <UniqueIdentifier>{c176adcf-3376-4ba6-a7b4-1d4fef047c1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\TestApp">
+      <UniqueIdentifier>{aa9b3f35-909d-462d-9f11-1c2f33ba9e3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\TestApp">
+      <UniqueIdentifier>{194e44fa-1713-473b-9cb8-2c18e1a35f7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MAD\MADBase">
+      <UniqueIdentifier>{a86d8d61-353b-42be-9af8-547857d12710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MAD\MADProtocol">
+      <UniqueIdentifier>{df2ac620-1115-4ae8-80bf-c4b24e92baaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\MAD\MADProtocol">
+      <UniqueIdentifier>{e3347773-ed8f-4a3a-9c10-036649f50623}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MAD\LuaSource\lapi.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lauxlib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lbaselib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lcode.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lcorolib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lctype.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\ldblib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\ldebug.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\ldo.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\ldump.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lfunc.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lgc.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\linit.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\liolib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\llex.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lmathlib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lmem.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\loadlib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lobject.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lopcodes.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\loslib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lparser.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lstate.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lstring.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lstrlib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\ltable.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\ltablib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\ltm.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lundump.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lutf8lib.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lvm.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\LuaSource\lzio.c">
+      <Filter>源文件\ThirdParty\LuaSource</Filter>
+    </ClCompile>
+    <ClCompile Include="MAD\MADLua\mad_lua.cpp">
+      <Filter>源文件\MAD\MADLua</Filter>
+    </ClCompile>
+    <ClCompile Include="TestApp\main.cpp">
+      <Filter>源文件\TestApp</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MAD\LuaSource\lapi.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lauxlib.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lcode.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lctype.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\ldebug.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\ldo.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lfunc.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lgc.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\ljumptab.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\llex.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\llimits.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lmem.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lobject.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lopcodes.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lopnames.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lparser.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lprefix.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lstate.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lstring.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\ltable.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\ltm.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lua.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\luaconf.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lualib.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lundump.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lvm.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lzio.h">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\LuaSource\lua.hpp">
+      <Filter>头文件\ThirdParty\LuaSource</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\MADLua\mad_lua.h">
+      <Filter>头文件\MAD\MADLua</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\mad.h">
+      <Filter>头文件\MAD</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\MADBase\mad_definition.h">
+      <Filter>头文件\MAD\MADBase</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\MADBase\mad_array.h">
+      <Filter>头文件\MAD\MADBase</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\MADBase\mad_math.h">
+      <Filter>头文件\MAD\MADBase</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\MADBase\mad_base.h">
+      <Filter>头文件\MAD\MADBase</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\MADBase\mad_debugger.h">
+      <Filter>头文件\MAD\MADBase</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\MADProtocol\mad_protocol.h">
+      <Filter>头文件\MAD\MADProtocol</Filter>
+    </ClInclude>
+    <ClInclude Include="MAD\MADProtocol\mad_ptc_definition.h">
+      <Filter>头文件\MAD\MADProtocol</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
