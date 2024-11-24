@@ -17,14 +17,14 @@
 /*Third Party Libs*/
 #include "../LuaSource/lua.hpp"
 
+/*STD functions*/
+#include <string>
+#include <functional>
+
 /*MAD APIs*/
-namespace MAD {
-	namespace Base {
 #include "mad_definition.h"
 #include "mad_debugger.h"
 #include "mad_array.h"
 #include "mad_math.h"
-	}
-}
 
 

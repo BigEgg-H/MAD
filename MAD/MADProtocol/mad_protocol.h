@@ -15,9 +15,4 @@
 #pragma once
 
 /*MAD APIs*/
-namespace MAD {
-	namespace MADProtocol {
-		using namespace MAD::Base;
 #include"mad_ptc_definition.h"
-	}
-}

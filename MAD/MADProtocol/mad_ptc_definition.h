@@ -15,6 +15,7 @@
 #pragma once
 
 #include "../MADBase/mad_base.h"
+#include "../MADBase/mad_math.h"
 
 /// <summary>
 /// 各个弹幕的数据储存结构体

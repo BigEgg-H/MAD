@@ -21,11 +21,6 @@
 #include "../MADBase/mad_base.h"
 #include "../MADProtocol/mad_protocol.h"
 
-namespace MAD {
-	namespace MADLuaAPI {
-		using namespace MAD::Base;
-		using namespace MAD::MADProtocol;
-
 		class MadLua{
 		public:
 			MadLua();
@@ -84,5 +79,5 @@ namespace MAD {
 			}
 		};
 
-	}
-}
+	
+

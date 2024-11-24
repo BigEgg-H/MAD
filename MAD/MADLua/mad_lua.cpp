@@ -15,9 +15,6 @@
 
 #include "mad_lua.h"
 
-namespace MAD {
-	namespace MADLuaAPI {
-
 		MadLua::MadLua() {
 			ScripetData = nullptr;
 			Is_Valid = false;
@@ -206,6 +203,3 @@ namespace MAD {
 
 			return 0;
 		}
-
-	}
-}

@@ -14,9 +14,9 @@
 /**************************************************************************/
 #pragma once
 
+/*string*/
 typedef const char* MADString_c;
 typedef const wchar_t* MADString_w;
-
-
+typedef std::string MADString;
 
 typedef void* (*MADCallback)(void* _userData);
