@@ -14,88 +14,43 @@
 /**************************************************************************/
 #pragma once
 
-#include <map>
 #include <functional>
 #include <string>
 
 #include "../MADBase/mad_base.h"
-#include "../MADProtocol/mad_protocol.h"
 
-class MadLua {
-public:
-	MadLua();
-	~MadLua();
+enum class MADScriptState { Deleted, Loaded, Ready };
 
-	const char* LoadScript(const char* content);
-	bool IsValid();
-
-	/*Common function*/
-public:
-	double GetValue_Number(const char* _valueName);
-	long long GetValue_Interge(const char* _valueName);
-	MADString_c GetValue_String(const char* _valueName);
-
-	/*Bullet Functions*/
-public:
-	bool CheckFor_BulletGroup();
-	MADBulletFlushResData FlushBulletInstance(const BulletInfo* _bullet);
-	int CollisionTestForCurrentInstance(MADEntity& _target);
-
-	void BindFunc_SpawnBullet(std::function<void(lua_State* _L)> _callback);
-
-	/*For lua API*/
-public:
-	static int LuaCallbackFunc(lua_State* _L);
-
-private:
-	lua_State* LuaState;
-
-	std::map<std::string, std::function<void(lua_State* _L)>> CallbackFuncs;
-
-	const char* ScripetData;
-	bool Is_Valid;
-};
-
-/// <summary>
-/// 弹幕模组的描述结构体
-/// </summary>
-struct BulletTypeInfo {
-	float LifeTime;
-	MadLua* BulletScript;
-	MADString_c TextureResourcePath;
-	void** UserData;
-
-	BulletTypeInfo() {
-		LifeTime = 0.0f;
-		BulletScript = nullptr;
-		TextureResourcePath = "";
-		UserData = nullptr;
-	}
-	BulletTypeInfo(const BulletTypeInfo& _parent) {
-		LifeTime = _parent.LifeTime;
-		BulletScript = _parent.BulletScript;
-		TextureResourcePath = _parent.TextureResourcePath;
-		UserData = _parent.UserData;
-	}
-};
-
-//TODO: Finish lua API
 class MADScript
 {
+/*Object operator*/
 public:
-	MADScript* LoadScript(MADString _script);
-
-private:
-	MADScript(MADString _script);
+	static MADScript* CreateScript(const MADString& _script);
 	~MADScript();
 
+/*Factory method,Do NOT create it directly*/
+private:
+	MADScript(const MADString& _script);
+
+/*User interface*/
+public:
+	MADString GetScriptText();
+	
+	void RunDirectly();
+	void DeleteScript();
+	MADDebuggerInfo_HEAVY ReloadScript(const MADString& _script);
+
+	int GetValueInteger(const char* _valueName);
+	double GetValueDouble(const char* _valueName);
+	MADString_c GetValueString(const char* _valueName);
+	bool GetValueBoolen(const char* _valueName);
+	void* GetValueUserPtr(const char* _valueName);
+	
 private:
 	/*Script Data*/
-	MADString Script;
-
+	MADString ScriptText;
+	MADScriptState ScriptState;
+	
 	/*Lua Data*/
 	lua_State* L;
 };
-
-
-

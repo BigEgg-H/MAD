@@ -15,223 +15,415 @@
 
 #include "mad_lua.h"
 
-MadLua::MadLua() {
-	ScripetData = nullptr;
-	Is_Valid = false;
-
-	LuaState = luaL_newstate();
-	luaL_openlibs(LuaState);
-}
-
-MadLua::~MadLua() {
-	lua_close(LuaState);
-}
-
-/// <summary>
-/// 将脚本代码加载为MADLuaScript对象,并运行以初始化.一旦调用此方法则该对象实例不可再重新初始化,
-/// 如果编译错误,需要清理该对象并重新创建一个新的实例.
-/// </summary>
-/// <param name="content">脚本代码</param>
-/// <returns>返回编译错误信息.如果编译成功则返回空字符串:""</returns>
-const char* MadLua::LoadScript(const char* content) {
-	ScripetData = content;
-	int res = luaL_loadstring(LuaState, ScripetData);
-	if (res == LUA_OK) {
-		lua_pushlightuserdata(LuaState, this);
-		lua_setglobal(LuaState, "MADSYS_CONTEXT_PTR");
-		lua_register(LuaState, "MADCallback", MadLua::LuaCallbackFunc);
-		if (lua_pcall(LuaState, 0, 0, 0) == LUA_OK) {
-			Is_Valid = true;
-			return "";
-		}
-		return lua_tostring(LuaState, -1);
-	}
-	if (res == LUA_ERRMEM) {
-		MAD_LOG_ERR("MAD mem out!\r\n");
-	}
-	return lua_tostring(LuaState, -1);
-}
-
-/// <summary>
-/// 返回对象是否可用.
-/// (注意:代码编译成功即可用,但代码不一定符合MAD标准,
-/// 若要检查握手是否成功请调用CheckFor_BulletGroup()方法)
-/// </summary>
-/// <returns>对象是否可用</returns>
-bool MadLua::IsValid() {
-	return Is_Valid;
-}
-
-/// <summary>
-/// 从脚本中读取Number类型(即double)的全局变量的值.
-/// 如果读取失败则会返回0.0,并打印错误.
-/// </summary>
-/// <param name="_valueName">全局变量名称</param>
-/// <returns>指定变量的值</returns>
-double MadLua::GetValue_Number(const char* _valueName) {
-	if (!Is_Valid) {
-		MAD_LOG_ERR("[MADLua]:Try to read a value from a null script!");
-		return 0.0;
-	}
-	if (lua_getglobal(LuaState, _valueName) == LUA_TNONE) {
-		MAD_LOG_ERR("[MADLua]:Can't find number value by name:");
-		MAD_LOG_ERR(_valueName);
-		return 0.0;
-	}
-	int res;
-	double buffer = lua_tonumberx(LuaState, -1, &res);
-	lua_pop(LuaState, 1);
-	if (res) {
-		return buffer;
-	}
-	MAD_LOG_ERR("[MADLua]:Get number value failed!Value name:");
-	MAD_LOG_ERR(_valueName);
-	return 0.0;
-}
-
-/// <summary>
-/// 从脚本中读取Int类型的全局变量的值.
-/// 如果读取失败则会返回0,并打印错误.
-/// </summary>
-/// <param name="_valueName">全局变量名称</param>
-/// <returns>指定变量的值</returns>
-long long MadLua::GetValue_Interge(const char* _valueName) {
-	if (!Is_Valid) {
-		MAD_LOG_ERR("[MADLua]:Try to read a value from a null script!");
-		return 0;
-	}
-	if (lua_getglobal(LuaState, _valueName) == LUA_TNONE) {
-		MAD_LOG_ERR("[MADLua]:Can't find number value by name:");
-		MAD_LOG_ERR(_valueName);
-		return 0;
-	}
-	int res;
-	long long buffer = lua_tointegerx(LuaState, -1, &res);
-	lua_pop(LuaState, 1);
-	if (res) {
-		return buffer;
-	}
-	MAD_LOG_ERR("[MADLua]:Get number value failed!Value name:");
-	MAD_LOG_ERR(_valueName);
-	return 0;
-}
-
-/// <summary>
-/// 从脚本中读取String类型(即const char*)的全局变量的值.
-/// 如果读取失败则会返回"",并打印错误.
-/// </summary>
-/// <param name="_valueName">全局变量名称</param>
-/// <returns>指定变量的值</returns>
-MADString_c MadLua::GetValue_String(const char* _valueName) {
-	if (lua_getglobal(LuaState, _valueName) == LUA_TNONE) {
-		MAD_LOG_ERR("[MADLua]:Can't find string value by name:");
-		MAD_LOG_ERR(_valueName);
-		return "";
-	}
-	const char* buffer = lua_tostring(LuaState, -1);
-	lua_pop(LuaState, 1);
-	return buffer;
-}
-
-/// <summary>
-/// 尝试与脚本握手,检查是否符合MAD规范.
-/// </summary>
-/// <returns>握手是否成功</returns>
-bool MadLua::CheckFor_BulletGroup() {
-	return true;
-}
-
-/// <summary>
-/// 刷新指定的弹幕实例,调用脚本中的Flush方法,并将bullet信息传递给函数
-/// </summary>
-/// <param name="_bullet">要刷新的bullet的信息</param>
-/// <returns>刷新后,bullet更新过的状态</returns>
-MADBulletFlushResData MadLua::FlushBulletInstance(const BulletInfo* _bullet) {
-	/*flush bullet*/
-	lua_getglobal(LuaState, "Flush");
-	lua_pushnumber(LuaState, _bullet->AliveTime);
-	lua_pushnumber(LuaState, _bullet->OriginPos.x);
-	lua_pushnumber(LuaState, _bullet->OriginPos.y);
-	lua_pushnumber(LuaState, _bullet->OriginDir.x);
-	lua_pushnumber(LuaState, _bullet->OriginDir.y);
-	lua_pcall(LuaState, 5, 4, 0);
-	float _x = lua_tonumber(LuaState, -4);
-	float _y = lua_tonumber(LuaState, -3);
-	float _x_dir = lua_tonumber(LuaState, -2);
-	float _y_dir = lua_tonumber(LuaState, -1);
-	lua_pop(LuaState, 4);
-
-	/*update bullet data*/
-	return MADBulletFlushResData(_x, _y, _x_dir, _y_dir);
-}
-
-/// <summary>
-/// 对刚刚刷新的弹幕进行判定检测.
-/// </summary>
-/// <param name="_target">要检测的实体</param>
-/// <returns>是否发生碰撞</returns>
-int MadLua::CollisionTestForCurrentInstance(MADEntity& _target) {
-	lua_getglobal(LuaState, "CollisionTest");
-	lua_pushnumber(LuaState, _target.Position.x);
-	lua_pushnumber(LuaState, _target.Position.y);
-	lua_pushnumber(LuaState, _target.TestRadius);
-	lua_pcall(LuaState, 3, 1, 0);
-	int _buffer = lua_tointeger(LuaState, -1);
-	lua_pop(LuaState, 1);
-
-	return _buffer;
-}
-
-void MadLua::BindFunc_SpawnBullet(std::function<void(lua_State* _L)> _callback) {
-	CallbackFuncs["SpawnBullet"] = _callback;
-}
-
-/// <summary>
-/// LuaAPI回调函数.请不要主动调用该函数,除非您清楚您在干什么!
-/// </summary>
-/// <param name="_L">LuaAPI Ptr</param>
-/// <returns>返回值的数量</returns>
-int MadLua::LuaCallbackFunc(lua_State* _L) {
-	int para_num = lua_gettop(_L);
-	if (para_num < 2) {
-		MAD_LOG_ERR("[MAD]:Callback illegality error!");
-		return 0;
-	}
-	MadLua* lua_buffer = (MadLua*)lua_touserdata(_L, 1);
-	const char* func_name = lua_tostring(_L, 2);
-	lua_buffer->CallbackFuncs[func_name](_L);
-
-	return 0;
-}
-
-MADScript* MADScript::LoadScript(MADString _script)
+/**
+ * 创建并初始化一个新的MADScript对象。
+ * 该方法尝试将给定的脚本代码加载到Lua环境中。如果加载成功，则返回一个新的MADScript对象实例；
+ * 否则，打印错误信息并返回nullptr。
+ * (注意:该方法创建完脚本后不会执行,你需要手动执行一次脚本来初始化可能的全局变量等对象!)
+ * 
+ * @param _script 要加载和初始化的脚本代码
+ * @return 加载成功返回新创建的MADScript对象指针；加载失败返回nullptr，并通过日志输出错误信息。
+ */
+MADScript* MADScript::CreateScript(const MADString& _script)
 {
 	/*Try to create script*/
-	lua_State* l_LBuffer = nullptr;
-	int l_res = luaL_loadstring(L, _script.c_str());
-	lua_close(l_LBuffer);
-
+	lua_State* l_LBuffer = luaL_newstate();
+	int l_res = luaL_loadstring(l_LBuffer, _script.c_str());
+	
 	/*Return*/
 	if (l_res == LUA_OK)
 	{
+		lua_close(l_LBuffer);
 		MAD_LOG_INFO("Script loaded successfully.");
 		return new MADScript(_script);
 	}
 
+	/*If failed*/
 	MADString l_sb = "Script loaded failed.";
+	l_sb.append("Error detail: \r\n");
+	l_sb.append(lua_tostring(l_LBuffer,-1));
 
+	lua_pop(l_LBuffer,1);
+	lua_close(l_LBuffer);
+	
 	MAD_LOG_ERR(l_sb.c_str());
 	return nullptr;
 }
 
-MADScript::MADScript(MADString _script)
+/**
+ * MADScript类的私有构造函数，用于初始化脚本对象的基本成员。
+ * 注意：此构造函数不负责加载脚本到Lua环境，请确保在调用前脚本已正确加载。
+ *
+ * @param _script 要保存的脚本代码引用
+ */
+MADScript::MADScript(const MADString& _script)
 {
-	Script = _script;
-	L = nullptr;
-	luaL_loadstring(L, Script.c_str());
+	ScriptText = _script;
+	L = luaL_newstate();
+	
+	luaL_loadstring(L, ScriptText.c_str());
+	luaL_openlibs(L);
+	ScriptState = MADScriptState::Loaded;
 }
 
+/**
+ * MADScript析构函数。
+ * 在MADScript对象生命周期结束时，自动调用此函数以释放关联的Lua状态机资源。
+ * 内部调用DeleteScript方法确保Lua环境正确清理。
+ */
 MADScript::~MADScript()
 {
+	DeleteScript();
+}
+
+/**
+ * 获取当前脚本的文本内容。
+ *
+ * 如果脚本已经被删除（ScriptState为Deleted），则会记录一条警告日志，
+ * 并返回一个空字符串。
+ *
+ * @return 脚本的文本内容，如果脚本已被删除，则返回空字符串。
+ */
+MADString MADScript::GetScriptText()
+{
+	if (ScriptState == MADScriptState::Deleted)
+	{
+		MAD_LOG_WARN("Try to get text from a script that had already deleted!");
+		return "";
+	}
+	return  ScriptText;
+}
+
+/**
+ * 直接运行当前MADScript对象中的Lua脚本。
+ *
+ * 此方法在当前Lua环境上执行脚本，不传入参数也不期待返回值。
+ * 成功执行后，若脚本状态为Loaded，则更新其状态为Ready。
+ * 如果尝试运行一个已删除的脚本，则会记录警告信息并返回。
+ *
+ * 注意：确保脚本已正确加载且未被标记为删除状态。
+ *
+ * @pre 脚本应已被成功加载（ScriptState为Loaded）且未被删除。
+ */
+void MADScript::RunDirectly()
+{
+	if (ScriptState == MADScriptState::Deleted)
+	{
+		MAD_LOG_WARN("Try to run a script that had already deleted!");
+		return;
+	}
+	lua_pcall(L, 0, 0, 0);
+	if (ScriptState == MADScriptState::Loaded)
+	{
+		ScriptState = MADScriptState::Ready;
+	}
+}
+
+/**
+ * 删除并清理MADScript对象所占用的资源。
+ * 此方法将脚本状态标记为已删除，关闭Lua状态机，清空Lua状态机指针以及脚本文本内容。
+ * 通常在脚本不再需要时调用，以确保资源得到正确释放。
+ *
+ * 注意：在对象生命周期结束时，析构函数会自动调用此方法，但也可以显式调用以立即释放资源。
+ */
+void MADScript::DeleteScript()
+{
+	ScriptState = MADScriptState::Deleted;
 	lua_close(L);
+	L = nullptr;
+	ScriptText = "";
+}
+
+/**
+ * 重新加载并初始化MADScript对象中的Lua脚本。
+ * 在执行此操作前，确保已经删除了原有的脚本。如果尝试在未删除状态下重新加载，
+ * 则会返回错误信息指出非法调用。
+ *
+ * @param _script 待重新加载的Lua脚本代码
+ * @return 返回关于重载操作的详细调试信息对象
+ *         - 成功时携带MAD_RESCODE_OK代码
+ *         - 内存不足时携带MAD_RESCODE_MEM_OUT及错误详情
+ *         - 语法错误时携带MAD_RESCODE_SYNTAX_ERROR及错误详情
+ *         - 非法调用时直接返回默认构造的MADDebuggerInfo_HEAVY对象
+ */
+MADDebuggerInfo_HEAVY MADScript::ReloadScript(const MADString& _script)
+{
+	if (ScriptState != MADScriptState::Deleted)
+	{
+		MAD_LOG_ERR("Try to reload a script without delete.");
+		return MADDebuggerInfo_HEAVY(MAD_RESCODE_ILLEGAL_CALL,"Try to reload a script without delete.");
+	}
+	
+	/*Try to create script*/
+	L = luaL_newstate();
+	int l_res = luaL_loadstring(L, _script.c_str());
+	
+	/*Return if reloaded successfully*/
+	if (l_res == LUA_OK)
+	{
+		luaL_openlibs(L);
+		ScriptText = _script;
+		ScriptState = MADScriptState::Loaded;
+		MAD_LOG_INFO("Script reloaded successfully.");
+		return MADDebuggerInfo_HEAVY(MAD_RESCODE_OK);
+	}
+
+	/*If failed*/
+	MADString lErrorInfo = "Script loaded failed.";
+	lErrorInfo.append("Error detail: \r\n");
+	lErrorInfo.append(lua_tostring(L,-1));
+
+	lua_pop(L,1);
+	lua_close(L);
+	
+	MAD_LOG_ERR(lErrorInfo.c_str());
+	L = nullptr;
+
+	if (l_res == LUA_ERRMEM)
+	{
+		return MADDebuggerInfo_HEAVY(MAD_RESCODE_MEM_OUT,lErrorInfo);
+	}
+	if (l_res == LUA_ERRSYNTAX)
+	{
+		return MADDebuggerInfo_HEAVY(MAD_RESCODE_SYNTAX_ERROR,lErrorInfo);
+	}
+	
+	return MADDebuggerInfo_HEAVY();
+}
+
+/**
+ * 从Lua环境中获取指定名称的全局整数值。
+ * 在调用此方法前，确保脚本状态为Ready，否则会返回错误或无效结果。
+ * 如果值不存在、类型不匹配或脚本状态异常，将记录错误信息并通过日志输出。
+ *
+ * @param _valueName 要获取的全局变量的名称
+ * @return 如果找到且为整数类型，则返回该全局变量的整数值；否则返回0。
+ */
+int MADScript::GetValueInteger(const char* _valueName)
+{
+	if (ScriptState != MADScriptState::Ready)
+	{
+		if (ScriptState == MADScriptState::Deleted)
+		{
+			MAD_LOG_ERR("Attempt to read value from a deleted Script!");
+		}
+		if (ScriptState == MADScriptState::Loaded)
+		{
+			MAD_LOG_ERR("Attempt to read value from a script without init,please run it directly first!");
+		}
+		return 0;
+	}
+
+	lua_getglobal(L, _valueName);
+	if (lua_isnil(L, -1))
+	{
+		MADString lOutInfo = "Can't find globle Value named: '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("'.");
+		MAD_LOG_ERR(lOutInfo);
+		return 0;
+	}
+	if (lua_isinteger(L, -1)) {
+		int value = lua_tointeger(L, -1);
+		lua_pop(L, 1);
+		return value;
+	} else {
+		MADString lOutInfo = "Type mismatch: Value '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("' is not an integer value.");
+		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
+		return 0;
+	}
+}
+
+/**
+ * 从Lua环境获取指定名称的全局double型变量值。
+ *
+ * 在脚本状态为Ready时，此方法尝试获取Lua环境中的全局变量 `_valueName` 对应的double值。
+ * 如果变量不存在、类型不匹配或脚本状态异常，将返回0.0并记录错误信息。
+ *
+ * @param _valueName 要获取的全局变量的名称。
+ * @return 变量存在且为double类型时返回其值；其他情况返回0.0。
+ */
+double MADScript::GetValueDouble(const char* _valueName)
+{
+	if (ScriptState != MADScriptState::Ready)
+	{
+		if (ScriptState == MADScriptState::Deleted)
+		{
+			MAD_LOG_ERR("Attempt to read value from a deleted Script!");
+		}
+		if (ScriptState == MADScriptState::Loaded)
+		{
+			MAD_LOG_ERR("Attempt to read value from a script without init,please run it directly first!");
+		}
+		return 0.0;
+	}
+
+	lua_getglobal(L, _valueName);
+	if (lua_isnil(L, -1))
+	{
+		MADString lOutInfo = "Can't find globle Value named: '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("'.");
+		MAD_LOG_ERR(lOutInfo);
+		return 0.0;
+	}
+	if (lua_isnumber(L, -1)) {
+		double value = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		return value;
+	} else {
+		MADString lOutInfo = "Type mismatch: Value '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("' is not an double value.");
+		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
+		return 0.0;
+	}
+}
+
+/**
+ * 从Lua环境中获取指定全局变量的字符串值。
+ *
+ * 此方法首先检查脚本状态是否就绪。若脚本已被删除，则记录错误信息并返回空字符串；
+ * 若脚本未初始化（仅加载），同样记录错误信息并返回空字符串。之后尝试从Lua全局表中获取
+ * 给定名称的值。如果找到的值不是字符串类型或不存在，将记录相应的错误信息并返回空字符串。
+ *
+ * @param _valueName 要获取其值的全局变量名称。
+ * @return 如果成功获取到字符串值，则返回该值；否则返回空字符串。
+ */
+MADString_c MADScript::GetValueString(const char* _valueName)
+{
+	if (ScriptState != MADScriptState::Ready)
+	{
+		if (ScriptState == MADScriptState::Deleted)
+		{
+			MAD_LOG_ERR("Attempt to read value from a deleted Script!");
+		}
+		if (ScriptState == MADScriptState::Loaded)
+		{
+			MAD_LOG_ERR("Attempt to read value from a script without init,please run it directly first!");
+		}
+		return "";
+	}
+
+	lua_getglobal(L, _valueName);
+	if (lua_isnil(L, -1))
+	{
+		MADString lOutInfo = "Can't find globle Value named: '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("'.");
+		MAD_LOG_ERR(lOutInfo);
+		return "";
+	}
+	if (lua_isstring(L, -1)) {
+		const char* value = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		return value;
+	} else {
+		MADString lOutInfo = "Type mismatch: Value '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("' is not an string value.");
+		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
+		return "";
+	}
+}
+
+/**
+ * 尝试从Lua环境获取指定的布尔型全局变量值。
+ *
+ * 在调用此方法前，确保脚本状态为Ready，即已加载并初始化完毕。
+ * 如果脚本被删除或未初始化，将返回false并记录错误信息。
+ * 如果指定的全局变量不存在或非布尔类型，也会返回false并记录相应的错误信息。
+ *
+ * @param _valueName 要获取的布尔型全局变量的名称
+ * @return 若获取成功，返回变量的布尔值；否则返回false。
+ */
+bool MADScript::GetValueBoolen(const char* _valueName)
+{
+	if (ScriptState != MADScriptState::Ready)
+	{
+		if (ScriptState == MADScriptState::Deleted)
+		{
+			MAD_LOG_ERR("Attempt to read value from a deleted Script!");
+		}
+		if (ScriptState == MADScriptState::Loaded)
+		{
+			MAD_LOG_ERR("Attempt to read value from a script without init,please run it directly first!");
+		}
+		return false;
+	}
+
+	lua_getglobal(L, _valueName);
+	if (lua_isnil(L, -1))
+	{
+		MADString lOutInfo = "Can't find globle Value named: '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("'.");
+		MAD_LOG_ERR(lOutInfo);
+		return false;
+	}
+	if (lua_isboolean(L, -1)) {
+		bool value = lua_toboolean(L, -1);
+		lua_pop(L, 1);
+		return value;
+	} else {
+		MADString lOutInfo = "Type mismatch: Value '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("' is not an bool value.");
+		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
+		return false;
+	}
+}
+
+/**
+ * 从Lua环境中获取指定名称的全局用户数据指针。
+ *
+ * 此方法检查脚本状态是否就绪，若脚本已被删除或尚未初始化，则返回nullptr并记录错误信息。
+ * 接着尝试从Lua全局变量中获取指定名称的值，如果该值存在且为轻量级用户数据（light userdata），
+ * 则返回该用户数据指针；如果找不到该值或其类型不匹配，则记录错误并返回nullptr。
+ *
+ * @param _valueName 要获取的全局变量的名称。
+ * @return 如果找到且类型匹配，返回对应的用户数据指针；否则返回nullptr。
+ */
+void* MADScript::GetValueUserPtr(const char* _valueName)
+{
+	if (ScriptState != MADScriptState::Ready)
+	{
+		if (ScriptState == MADScriptState::Deleted)
+		{
+			MAD_LOG_ERR("Attempt to read value from a deleted Script!");
+		}
+		if (ScriptState == MADScriptState::Loaded)
+		{
+			MAD_LOG_ERR("Attempt to read value from a script without init,please run it directly first!");
+		}
+		return nullptr;
+	}
+
+	lua_getglobal(L, _valueName);
+	if (lua_isnil(L, -1))
+	{
+		MADString lOutInfo = "Can't find globle Value named: '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("'.");
+		MAD_LOG_ERR(lOutInfo);
+		return nullptr;
+	}
+	if (lua_islightuserdata(L, -1)) {
+		void* value = lua_touserdata(L, -1);
+		lua_pop(L, 1);
+		return value;
+	} else {
+		MADString lOutInfo = "Type mismatch: Value '";
+		lOutInfo.append(_valueName);
+		lOutInfo.append("' is not an user data value.");
+		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
+		return nullptr;
+	}
 }

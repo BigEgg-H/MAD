@@ -21,4 +21,8 @@ int main() {
 	MAD_Debugger::GetInstance().SetPrinter(PrinterType::Warning, test_warn_printer);
 	MAD_Debugger::GetInstance().SetPrinter(PrinterType::Infomation, test_info_printer);
 
+	MADScript* mad_script = MADScript::CreateScript("print(\"Hello MAD!\")\nA=\"hello?\"");
+
+	mad_script->RunDirectly();
+	MAD_LOG_INFO(mad_script->GetValueString("A"));
 }

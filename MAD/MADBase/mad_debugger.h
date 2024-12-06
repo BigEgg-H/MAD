@@ -170,8 +170,6 @@ public:
 			}
 			MAD_Info_Printer(_target);
 			break;
-		default:
-			break;
 		}
 	}
 
@@ -188,6 +186,9 @@ private:
 /*MAD Err const value*/
 #define MAD_RESCODE_UNKNOWN -1
 #define MAD_RESCODE_OK 0
+#define MAD_RESCODE_SYNTAX_ERROR 1
+#define MAD_RESCODE_MEM_OUT 2
+#define MAD_RESCODE_ILLEGAL_CALL 3
 
 #define MAD_IS_OK(res) res == 0
 
