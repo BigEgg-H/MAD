@@ -189,6 +189,8 @@ private:
 #define MAD_RESCODE_SYNTAX_ERROR 1
 #define MAD_RESCODE_MEM_OUT 2
 #define MAD_RESCODE_ILLEGAL_CALL 3
+#define MAD_RESCODE_FUNC_NOT_FOUND 4
+#define MAD_RESCODE_FUNC_FAILED 5
 
 #define MAD_IS_OK(res) res == 0
 

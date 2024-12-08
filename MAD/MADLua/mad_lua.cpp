@@ -95,6 +95,39 @@ MADString MADScript::GetScriptText()
 }
 
 /**
+ * 获取当前MADScript对象的脚本状态。
+ *
+ * 此方法返回脚本的当前状态，例如是否已被删除、已加载或准备就绪。
+ *
+ * @return 返回当前脚本的状态，其类型为MADScriptState枚举值。
+ */
+MADScriptState MADScript::GetScriptState()
+{
+	return ScriptState;
+}
+
+/**
+ * 获取与MADScript对象关联的Lua状态机指针。
+ * 如果脚本已被删除（ScriptState为Deleted），则此方法将记录错误信息并通过日志输出，
+ * 并返回nullptr以指示无法获取Lua状态机。
+ * 
+ * 注意:
+ * -危险操作,除非你知道你在做什么,否则不要使用这个方法。
+ * -不要尝试通过指针改变lua状态,这可能会导致内部回调lua虚拟机时发生致命错误而崩溃。
+ * 
+ * @return 如果脚本有效，返回关联的lua_State指针；若脚本已被删除，则返回nullptr。
+ */
+lua_State* MADScript::GetLuaState()
+{
+	if (ScriptState == MADScriptState::Deleted)
+	{
+		MAD_LOG_ERR("Try to get script VM that had already deleted!");
+		return nullptr;
+	}
+	return L;
+}
+
+/**
  * 直接运行当前MADScript对象中的Lua脚本。
  *
  * 此方法在当前Lua环境上执行脚本，不传入参数也不期待返回值。
@@ -109,7 +142,7 @@ void MADScript::RunDirectly()
 {
 	if (ScriptState == MADScriptState::Deleted)
 	{
-		MAD_LOG_WARN("Try to run a script that had already deleted!");
+		MAD_LOG_ERR("Try to run a script that had already deleted!");
 		return;
 	}
 	lua_pcall(L, 0, 0, 0);
@@ -145,6 +178,8 @@ void MADScript::DeleteScript()
  *         - 内存不足时携带MAD_RESCODE_MEM_OUT及错误详情
  *         - 语法错误时携带MAD_RESCODE_SYNTAX_ERROR及错误详情
  *         - 非法调用时直接返回默认构造的MADDebuggerInfo_HEAVY对象
+ *         
+ * 注意:该方法不应该大量使用,该方法设计目的仅为方便调试以及内部回调.使用该类时,请严格遵循RAII设计模式
  */
 MADDebuggerInfo_HEAVY MADScript::ReloadScript(const MADString& _script)
 {
@@ -153,7 +188,8 @@ MADDebuggerInfo_HEAVY MADScript::ReloadScript(const MADString& _script)
 		MAD_LOG_ERR("Try to reload a script without delete.");
 		return MADDebuggerInfo_HEAVY(MAD_RESCODE_ILLEGAL_CALL,"Try to reload a script without delete.");
 	}
-	
+
+	MAD_LOG_WARN("Try to reload a script.Please follow the RAII design pattern!If you clear what you are doing please ignore this warning.");
 	/*Try to create script*/
 	L = luaL_newstate();
 	int l_res = luaL_loadstring(L, _script.c_str());
@@ -199,7 +235,7 @@ MADDebuggerInfo_HEAVY MADScript::ReloadScript(const MADString& _script)
  * @param _valueName 要获取的全局变量的名称
  * @return 如果找到且为整数类型，则返回该全局变量的整数值；否则返回0。
  */
-int MADScript::GetValueInteger(const char* _valueName)
+long long MADScript::GetValueInteger(const char* _valueName)
 {
 	if (ScriptState != MADScriptState::Ready)
 	{
@@ -217,14 +253,15 @@ int MADScript::GetValueInteger(const char* _valueName)
 	lua_getglobal(L, _valueName);
 	if (lua_isnil(L, -1))
 	{
-		MADString lOutInfo = "Can't find globle Value named: '";
+		MADString lOutInfo = "Can't find globe Value named: '";
 		lOutInfo.append(_valueName);
 		lOutInfo.append("'.");
 		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
 		return 0;
 	}
 	if (lua_isinteger(L, -1)) {
-		int value = lua_tointeger(L, -1);
+		long long value = lua_tointeger(L, -1);
 		lua_pop(L, 1);
 		return value;
 	} else {
@@ -264,10 +301,11 @@ double MADScript::GetValueDouble(const char* _valueName)
 	lua_getglobal(L, _valueName);
 	if (lua_isnil(L, -1))
 	{
-		MADString lOutInfo = "Can't find globle Value named: '";
+		MADString lOutInfo = "Can't find globe Value named: '";
 		lOutInfo.append(_valueName);
 		lOutInfo.append("'.");
 		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
 		return 0.0;
 	}
 	if (lua_isnumber(L, -1)) {
@@ -312,10 +350,11 @@ MADString_c MADScript::GetValueString(const char* _valueName)
 	lua_getglobal(L, _valueName);
 	if (lua_isnil(L, -1))
 	{
-		MADString lOutInfo = "Can't find globle Value named: '";
+		MADString lOutInfo = "Can't find globe Value named: '";
 		lOutInfo.append(_valueName);
 		lOutInfo.append("'.");
 		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
 		return "";
 	}
 	if (lua_isstring(L, -1)) {
@@ -342,7 +381,7 @@ MADString_c MADScript::GetValueString(const char* _valueName)
  * @param _valueName 要获取的布尔型全局变量的名称
  * @return 若获取成功，返回变量的布尔值；否则返回false。
  */
-bool MADScript::GetValueBoolen(const char* _valueName)
+bool MADScript::GetValueBoolean(const char* _valueName)
 {
 	if (ScriptState != MADScriptState::Ready)
 	{
@@ -360,10 +399,11 @@ bool MADScript::GetValueBoolen(const char* _valueName)
 	lua_getglobal(L, _valueName);
 	if (lua_isnil(L, -1))
 	{
-		MADString lOutInfo = "Can't find globle Value named: '";
+		MADString lOutInfo = "Can't find globe Value named: '";
 		lOutInfo.append(_valueName);
 		lOutInfo.append("'.");
 		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
 		return false;
 	}
 	if (lua_isboolean(L, -1)) {
@@ -408,10 +448,11 @@ void* MADScript::GetValueUserPtr(const char* _valueName)
 	lua_getglobal(L, _valueName);
 	if (lua_isnil(L, -1))
 	{
-		MADString lOutInfo = "Can't find globle Value named: '";
+		MADString lOutInfo = "Can't find globe Value named: '";
 		lOutInfo.append(_valueName);
 		lOutInfo.append("'.");
 		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
 		return nullptr;
 	}
 	if (lua_islightuserdata(L, -1)) {
@@ -427,3 +468,151 @@ void* MADScript::GetValueUserPtr(const char* _valueName)
 		return nullptr;
 	}
 }
+
+/**
+ * 向Lua环境注册一个C语言回调函数。
+ *
+ * 此方法将指定的C语言回调函数注册到当前Lua环境的全局表中，使其可以通过 Lua 脚本中指定的函数名进行调用。
+ *
+ * @param _funcName 要在Lua环境中注册的函数名称。
+ * @param _target 要注册的C语言回调函数指针，其原型应与`lua_CFunction`一致。
+ *
+ * 注意：
+ * - 函数注册后，即可在Lua脚本中通过 `_funcName` 调用此C函数。
+ * - 若 `_funcName` 已存在于Lua全局表中，此函数将会覆盖原有同名函数。
+ * - 受限于Lua的API,只能注册C风格的函数来达到目的。
+ */
+void MADScript::RegisterCFunction(const char* _funcName, MADScriptCallbackCFunction _target)
+{
+	if (ScriptState == MADScriptState::Deleted)
+	{
+		MAD_LOG_ERR(MADString("Try to register function \"")+
+			MADString(_funcName)+
+			MADString("\" on a deleted script!"));
+		return;
+	}
+	lua_pushcfunction(L, _target);
+	lua_setglobal(L, _funcName);
+}
+
+/**
+ * 调用Lua脚本中的指定全局函数。
+ * 此方法负责查找函数、压入参数、调用函数、处理返回值并将结果（如有）存入输出数据流。
+ *
+ * @param _funcName 要调用的Lua全局函数名。
+ * @param _arg 包含要传递给函数的参数的数据流。
+ * @param[out] out_ret 一个指向MADScriptDataStream的指针，用于接收Lua函数的返回值（若有）。若不需要返回值，可传入nullptr。
+ * @return 返回调用结果的状态码，MAD_RESCODE_OK表示成功，其他值表示错误（如函数未找到）。
+ *
+ * 注意：
+ * - 函数会自动管理Lua堆栈，调用前后保持堆栈平衡。
+ * - 若提供的函数名在Lua环境中不存在，会记录错误日志并返回MAD_RESCODE_FUNC_NOT_FOUND。
+ * - 支持多种类型的参数与返回值转换，但受限于Lua API，整数参数会被转为双精度浮点数返回。
+ */
+MADDebuggerInfo_LIGHT MADScript::CallFunction(
+	const char* _funcName, MADScriptDataStream& _arg,MADScriptDataStream* out_ret)
+{
+	if (ScriptState != MADScriptState::Ready)
+	{
+		if (ScriptState == MADScriptState::Deleted)
+		{
+			MAD_LOG_ERR("Attempt to call function from a deleted Script!");
+		}
+		if (ScriptState == MADScriptState::Loaded)
+		{
+			MAD_LOG_ERR("Attempt to call function from a script without init,please run it directly first!");
+		}
+		return MAD_RESCODE_ILLEGAL_CALL;
+	}
+	
+	lua_getglobal(L, _funcName); // 获取全局函数
+	if (lua_isnil(L, -1))
+	{
+		MADString lOutInfo = "Can't find globe function named: '";
+		lOutInfo.append(_funcName);
+		lOutInfo.append("'.");
+		MAD_LOG_ERR(lOutInfo);
+		lua_pop(L, 1);
+		return MAD_RESCODE_FUNC_NOT_FOUND;
+	}
+
+	if (!_arg.empty())
+	{
+		for (const auto& data : _arg) {
+			switch (data.type) {
+			case MADScriptValueType::Unknown:
+				MAD_LOG_ERR("Try to push a unknown value to call lua function: " + MADString(_funcName));
+				lua_pushnil(L);
+				break;
+			case MADScriptValueType::Nil:
+				lua_pushnil(L);
+				break;
+			case MADScriptValueType::Boolean:
+				lua_pushboolean(L,*static_cast<bool*>(data.data));
+				break;
+			case MADScriptValueType::LightUserdata:
+				lua_pushlightuserdata(L, data.data);
+				break;
+			case MADScriptValueType::Number:
+				lua_pushnumber(L,*static_cast<double*>(data.data));
+				break;
+			case MADScriptValueType::String:
+				lua_pushstring(L, static_cast<const char*>(data.data));
+				break;
+			case MADScriptValueType::Integer:
+				lua_pushinteger(L,*static_cast<long long*>(data.data));
+				break;
+			}
+		}
+	}	
+	
+	int res = lua_pcall(L, (int)_arg.size(), LUA_MULTRET, 0); // 调用函数，允许多返回值
+	if (res != LUA_OK)
+	{
+		MAD_LOG_ERR("Call function: " + MADString(_funcName) +" failed!");
+		return MAD_RESCODE_FUNC_FAILED;
+	}
+
+	// 确定返回值数量
+	int num_returns = lua_gettop(L);
+
+	// 如果需要收集返回值，可以遍历堆栈并处理
+	if (out_ret != nullptr) {
+		for (int i = 0; i < num_returns; ++i) {
+			// 读取并处理每个返回值，转换并存入out_ret
+			MADScriptData retData;
+			switch (lua_type(L, -num_returns + i)) {
+			case LUA_TNIL:
+				retData = MADScriptData(MADScriptValueType::Nil);
+				break;
+			case LUA_TBOOLEAN:
+				retData = MADScriptData(MADScriptValueType::Boolean,new bool(lua_toboolean(L, -num_returns + i)));
+				break;
+			case LUA_TLIGHTUSERDATA:
+				retData = MADScriptData(MADScriptValueType::LightUserdata,lua_touserdata(L, -num_returns + i));
+				break;
+			case LUA_TNUMBER:
+				// Note: 受限于Lua的API,无法返回int类型参数,只能返回double类型参数
+				retData = MADScriptData(MADScriptValueType::Number,new double(lua_tonumber(L, -num_returns + i)));
+				break;
+			case LUA_TSTRING:
+				{
+					const char* str = lua_tostring(L, -num_returns + i);
+					retData = MADScriptData(MADScriptValueType::String,new MADString(str));
+				}
+				break;
+			default:
+				MAD_LOG_ERR("Unsupported return value type from Lua function: " + MADString(_funcName));
+				retData = MADScriptData();
+			}
+			out_ret->push_back(retData);
+		}
+	}
+
+	// 清理堆栈和错误处理
+	lua_pop(L, num_returns); 
+
+	// 返回调试信息或状态
+	return MAD_RESCODE_OK;
+}
+
