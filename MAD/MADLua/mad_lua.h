@@ -14,16 +14,64 @@
 /**************************************************************************/
 #pragma once
 
-#include <functional>
 #include <string>
+#include <vector>
 
 #include "../MADBase/mad_base.h"
 
 enum class MADScriptState { Deleted, Loaded, Ready };
 
+typedef int (*MADScriptCallbackCFunction)(lua_State*);
+
+/**
+ * \brief MADScriptValueType 枚举定义了MADScriptData结构体中可存储的数据类型。
+ *
+ * 枚举成员包括：
+ * - Unknown: 未知类型
+ * - Nil: 空值
+ * - Boolean: 布尔值
+ * - LightUserdata: 轻量级用户数据
+ * - Number: 数值（浮点型）
+ * - String: 字符串
+ * - Integer: 整数值
+ *
+ * 这些类型用于精确地表示Lua脚本中的数据类型，并在MADScriptData中进行引用。
+ */
+enum class MADScriptValueType { Unknown = -1, Nil = 0, Boolean = 1, LightUserdata = 2, Number = 3, String = 4 , Integer = 5};
+
+/**
+ * \brief MADScriptData 结构体用于封装 Lua 脚本中的变量值及其类型。
+ *
+ * 此结构体包含两个成员：一个用于存储数据的指针 `data` 和一个表示数据类型的枚举 `type`。
+ * 提供了一个构造函数用于初始化数据类型和数据指针，支持默认构造为未知类型和空指针。
+ *
+ * \note
+ * - 使用时确保正确管理 `data` 指向的内存。
+ * - 枚举类型 `MADScriptValueType` 定义了支持的数据类型。
+ */
+struct MADScriptData
+{
+	void* data;
+	MADScriptValueType type;
+
+	MADScriptData(MADScriptValueType _type = MADScriptValueType::Unknown,void* _data = nullptr){
+		type = _type;
+		data = _data;
+	}
+};
+
+typedef std::vector<MADScriptData> MADScriptDataStream;
+
+/**
+ * MADScript 类提供了管理 Lua 脚本的功能，包括加载、运行、删除脚本以及与 Lua 状态机交互的能力。
+ * 用户应通过工厂方法创建实例，并利用提供的接口进行操作。
+ * 
+ * 注意:
+ * -使用过程中请遵循RAII原则,除非您知道您在做什么!
+ */
 class MADScript
 {
-/*Object operator*/
+/*Create operator*/
 public:
 	static MADScript* CreateScript(const MADString& _script);
 	~MADScript();
@@ -34,17 +82,26 @@ private:
 
 /*User interface*/
 public:
+	/*Get Data*/
 	MADString GetScriptText();
-	
+	MADScriptState GetScriptState();
+	lua_State* GetLuaState();
+
+	/*Init script*/
 	void RunDirectly();
 	void DeleteScript();
 	MADDebuggerInfo_HEAVY ReloadScript(const MADString& _script);
 
-	int GetValueInteger(const char* _valueName);
+	/*Get value*/
+	long long GetValueInteger(const char* _valueName);
 	double GetValueDouble(const char* _valueName);
 	MADString_c GetValueString(const char* _valueName);
-	bool GetValueBoolen(const char* _valueName);
+	bool GetValueBoolean(const char* _valueName);
 	void* GetValueUserPtr(const char* _valueName);
+
+	/*Function*/
+	void RegisterCFunction(const char* _funcName,MADScriptCallbackCFunction _target);
+	MADDebuggerInfo_LIGHT CallFunction(const char* _funcName, MADScriptDataStream& _arg, MADScriptDataStream* out_ret = nullptr);
 	
 private:
 	/*Script Data*/
