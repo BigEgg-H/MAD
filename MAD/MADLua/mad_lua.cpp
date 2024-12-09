@@ -62,7 +62,7 @@ MADScript::MADScript(const MADString& _script)
 	L = luaL_newstate();
 	
 	luaL_loadstring(L, ScriptText.c_str());
-	luaL_openlibs(L);
+	InitLuaState();
 	ScriptState = MADScriptState::Loaded;
 }
 
@@ -145,7 +145,7 @@ void MADScript::RunDirectly()
 		MAD_LOG_ERR("Try to run a script that had already deleted!");
 		return;
 	}
-	lua_pcall(L, 0, 0, 0);
+	lua_pcall(L, 0, 0, NULL);
 	if (ScriptState == MADScriptState::Loaded)
 	{
 		ScriptState = MADScriptState::Ready;
@@ -197,7 +197,7 @@ MADDebuggerInfo_HEAVY MADScript::ReloadScript(const MADString& _script)
 	/*Return if reloaded successfully*/
 	if (l_res == LUA_OK)
 	{
-		luaL_openlibs(L);
+		InitLuaState();
 		ScriptText = _script;
 		ScriptState = MADScriptState::Loaded;
 		MAD_LOG_INFO("Script reloaded successfully.");
@@ -332,7 +332,7 @@ double MADScript::GetValueDouble(const char* _valueName)
  * @param _valueName 要获取其值的全局变量名称。
  * @return 如果成功获取到字符串值，则返回该值；否则返回空字符串。
  */
-MADString_c MADScript::GetValueString(const char* _valueName)
+MADString MADScript::GetValueString(const char* _valueName)
 {
 	if (ScriptState != MADScriptState::Ready)
 	{
@@ -470,6 +470,80 @@ void* MADScript::GetValueUserPtr(const char* _valueName)
 }
 
 /**
+ * 设置Lua全局变量的整数值。
+ *
+ * 此方法将给定的整数值 `_value` 与对应的变量名 `_valueName` 设置为Lua环境中的全局变量。
+ *
+ * @param _valueName 全局变量的名称，必须是有效的Lua变量名。
+ * @param _value 要设置的整数值。
+ */
+void MADScript::SetValueInteger(const char* _valueName, const long long& _value)
+{
+	lua_pushinteger(L,_value);
+	lua_setglobal(L,_valueName);
+}
+
+/**
+ * 设置全局Lua变量的双精度浮点数值。
+ *
+ * 此方法将给定的双精度数值压入Lua栈，然后以指定的名字设置为全局变量。
+ * 如果Lua状态机L未初始化或发生错误，则可能会影响操作的成功执行。
+ *
+ * @param _valueName 要设置的全局变量的名称
+ * @param _value 要赋给全局变量的双精度浮点数值
+ */
+void MADScript::SetValueDouble(const char* _valueName, const double& _value)
+{
+	lua_pushnumber(L,_value);
+	lua_setglobal(L,_valueName);
+}
+
+/**
+ * 设置Lua全局变量的字符串值。
+ *
+ * 此方法将指定的字符串值 `_value` 设置到Lua环境中的全局变量 `_valueName`。
+ * 它首先将字符串推入Lua栈，然后设置为全局变量。
+ *
+ * @param _valueName 要设置的全局变量的名称（C字符串）
+ * @param _value 要设置的字符串值
+ */
+void MADScript::SetValueString(const char* _valueName, const MADString& _value)
+{
+	lua_pushstring(L,_value.c_str());
+	lua_setglobal(L,_valueName);
+}
+
+/**
+ * 向Lua环境设置一个布尔型全局变量。
+ *
+ * 此方法将给定的布尔值以全局变量的形式存储在Lua环境中，
+ * 变量名由 `_valueName` 指定。这用于在脚本中设置或修改布尔类型的值。
+ *
+ * @param _valueName 要设置的全局变量的名称（C字符串）。
+ * @param _value 要设置的布尔值。
+ */
+void MADScript::SetValueBoolean(const char* _valueName, const bool& _value)
+{
+	lua_pushboolean(L,_value);
+	lua_setglobal(L,_valueName);
+}
+
+/**
+ * 向Lua环境设置一个用户数据类型的全局变量。
+ *
+ * 此方法将给定的C指针作为轻用户数据推入Lua堆栈，并使用指定的名称将其设为全局变量。
+ * 这使得在Lua脚本中可以通过该名称访问这个C指针。
+ *
+ * @param _valueName 全局变量的名称，用于在Lua环境中标识这个用户数据。
+ * @param _value 要设置的用户数据指针，可以是任何C指针。
+ */
+void MADScript::SetValueUserPtr(const char* _valueName, void* _value)
+{
+	lua_pushlightuserdata(L,_value);
+	lua_setglobal(L,_valueName);
+}
+
+/**
  * 向Lua环境注册一个C语言回调函数。
  *
  * 此方法将指定的C语言回调函数注册到当前Lua环境的全局表中，使其可以通过 Lua 脚本中指定的函数名进行调用。
@@ -510,7 +584,7 @@ void MADScript::RegisterCFunction(const char* _funcName, MADScriptCallbackCFunct
  * - 支持多种类型的参数与返回值转换，但受限于Lua API，整数参数会被转为双精度浮点数返回。
  */
 MADDebuggerInfo_LIGHT MADScript::CallFunction(
-	const char* _funcName, MADScriptDataStream& _arg,MADScriptDataStream* out_ret)
+	const char* _funcName, const MADScriptDataStream& _arg,MADScriptDataStream* out_ret)
 {
 	if (ScriptState != MADScriptState::Ready)
 	{
@@ -540,27 +614,27 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
 	{
 		for (const auto& data : _arg) {
 			switch (data.type) {
-			case MADScriptValueType::Unknown:
-				MAD_LOG_ERR("Try to push a unknown value to call lua function: " + MADString(_funcName));
-				lua_pushnil(L);
-				break;
-			case MADScriptValueType::Nil:
-				lua_pushnil(L);
-				break;
-			case MADScriptValueType::Boolean:
-				lua_pushboolean(L,*static_cast<bool*>(data.data));
-				break;
 			case MADScriptValueType::LightUserdata:
 				lua_pushlightuserdata(L, data.data);
 				break;
 			case MADScriptValueType::Number:
 				lua_pushnumber(L,*static_cast<double*>(data.data));
 				break;
-			case MADScriptValueType::String:
-				lua_pushstring(L, static_cast<const char*>(data.data));
+			case MADScriptValueType::Boolean:
+				lua_pushboolean(L,*static_cast<bool*>(data.data));
 				break;
 			case MADScriptValueType::Integer:
 				lua_pushinteger(L,*static_cast<long long*>(data.data));
+				break;
+			case MADScriptValueType::String:
+				lua_pushstring(L, static_cast<MADString*>(data.data)->c_str());
+				break;
+			case MADScriptValueType::Unknown:
+				MAD_LOG_ERR("Try to push a unknown value to call lua function: " + MADString(_funcName));
+				lua_pushnil(L);
+				break;
+			case MADScriptValueType::Nil:
+				lua_pushnil(L);
 				break;
 			}
 		}
@@ -614,5 +688,66 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
 
 	// 返回调试信息或状态
 	return MAD_RESCODE_OK;
+}
+
+/**
+ * (内部回调函数,禁止主动调用)
+ * 在Lua环境中复制数据到轻量级用户数据指针中。
+ * 此方法从Lua堆栈中获取两个参数：第一个是轻量级用户数据指针（void*），第二个是要复制的值。
+ * 支持复制的Lua值类型有布尔型、数值型（以double表示）、字符串型。
+ *
+ * 注意：
+ * - 确保调用此函数时Lua堆栈顶有且仅有两个参数。
+ * - 第一个参数必须是轻量级用户数据（lightuserdata）。
+ * - 该函数用于内部回调,任何时候都不应该主动调用该函数!
+ * - 受限于LuaAPI,只支持布尔型(bool)、数值型（double）、字符串(MADString)型三种类型的值可以通过复制到指针的方式与脚本通信!
+ *
+ * @param L 当前的Lua状态机指针。
+ * @return 返回0，用于Lua的内部处理。不直接表示成功或失败，需根据日志判断。
+ */
+int MADScript::CopyData(lua_State* L)
+{
+	if (lua_gettop(L) != 2){
+		MAD_LOG_ERR("Illegal call for copy function.This function need 2 arg to call.");
+		lua_pop(L, lua_gettop(L));
+		return 0;
+	}
+	if (!lua_islightuserdata(L,1)){
+		MAD_LOG_ERR("Illegal call for copy function.First arg is not a valid userdata ptr (light userdata in lua, also void* in c).");
+		lua_pop(L,2);		
+		return 0;
+	}
+	switch (lua_type(L, 2)){
+	case LUA_TBOOLEAN:
+		*static_cast<bool*>(lua_touserdata(L,1)) = lua_toboolean(L, 2);
+		break;
+	case LUA_TNUMBER:
+		*static_cast<double*>(lua_touserdata(L,1)) = lua_tonumber(L, 2);
+		break;
+	case LUA_TSTRING:
+		*static_cast<MADString*>(lua_touserdata(L,1)) = MADString(lua_tostring(L, 2));
+		break;
+	default:
+		MAD_LOG_ERR("Unsupported value type for Lua copy function.Please copy boolean, number or string.");
+		return 0;
+	}
+
+	lua_pop(L,2);
+	
+	return 0;
+}
+
+/**
+ * (内部回调函数,禁止主动调用)
+ * 初始化Lua状态机，注册基础库并添加自定义函数。
+ * 此方法会在MADScript对象创建时被调用，用于准备Lua环境以便执行脚本。
+ * 它首先通过luaL_openlibs打开所有默认的Lua库，然后注册一个名为"CopyData"的C函数到Lua环境中。
+ *
+ * 注意：该方法会在luaL_loadstring成功加载脚本之后被调用,请勿主动调用此函数。
+ */
+void MADScript::InitLuaState()
+{
+	luaL_openlibs(L);
+	lua_register(L, "CopyData", CopyData);
 }
 

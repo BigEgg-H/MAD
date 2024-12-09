@@ -80,7 +80,7 @@ struct MADDebuggerInfo_HEAVY
 /// <summary>
 /// MAD专用打印机,用于自定义输出消息
 /// </summary>
-typedef std::function<void(MADString)> MAD_Printer;
+typedef std::function<void(const MADString&)> MAD_Printer;
 
 /// <summary>
 /// 打印机种类
@@ -126,7 +126,7 @@ public:
 	/// </summary>
 	/// <param name="_type">打印机的种类</param>
 	/// <param name="_target">打印机的标准函数对象</param>
-	void SetPrinter(PrinterType _type, MAD_Printer _target){
+	void SetPrinter(PrinterType _type, const MAD_Printer& _target){
 		switch (_type)
 		{
 		case PrinterType::Error:
@@ -146,7 +146,7 @@ public:
 	/// </summary>
 	/// <param name="_type">类型</param>
 	/// <param name="_target">目标</param>
-	void Print(PrinterType _type, MADString _target) {
+	void Print(PrinterType _type, const MADString& _target) {
 		switch (_type)
 		{
 		case PrinterType::Error:
