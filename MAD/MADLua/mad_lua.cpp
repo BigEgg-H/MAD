@@ -707,25 +707,25 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
  */
 int MADScript::CopyData(lua_State* L)
 {
-	if (lua_gettop(L) != 2){
+	if (lua_gettop(L) < 2){
 		MAD_LOG_ERR("Illegal call for copy function.This function need 2 arg to call.");
 		lua_pop(L, lua_gettop(L));
 		return 0;
 	}
-	if (!lua_islightuserdata(L,1)){
+	if (!lua_islightuserdata(L,-2)){
 		MAD_LOG_ERR("Illegal call for copy function.First arg is not a valid userdata ptr (light userdata in lua, also void* in c).");
 		lua_pop(L,2);		
 		return 0;
 	}
-	switch (lua_type(L, 2)){
-	case LUA_TBOOLEAN:
-		*static_cast<bool*>(lua_touserdata(L,1)) = lua_toboolean(L, 2);
-		break;
+	switch (lua_type(L, -1)){
 	case LUA_TNUMBER:
-		*static_cast<double*>(lua_touserdata(L,1)) = lua_tonumber(L, 2);
+		*static_cast<double*>(lua_touserdata(L,-2)) = lua_tonumber(L, -1);
+		break;
+	case LUA_TBOOLEAN:
+		*static_cast<bool*>(lua_touserdata(L,-2)) = lua_toboolean(L, -1);
 		break;
 	case LUA_TSTRING:
-		*static_cast<MADString*>(lua_touserdata(L,1)) = MADString(lua_tostring(L, 2));
+		*static_cast<MADString*>(lua_touserdata(L,-2)) = MADString(lua_tostring(L, -1));
 		break;
 	default:
 		MAD_LOG_ERR("Unsupported value type for Lua copy function.Please copy boolean, number or string.");
