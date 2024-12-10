@@ -179,7 +179,7 @@ void MADScript::DeleteScript()
  *         - 语法错误时携带MAD_RESCODE_SYNTAX_ERROR及错误详情
  *         - 非法调用时直接返回默认构造的MADDebuggerInfo_HEAVY对象
  *         
- * 注意:该方法不应该大量使用,该方法设计目的仅为方便调试以及内部回调.使用该类时,请严格遵循RAII设计模式
+ * 注意:该方法不应该大量使用,其设计的目的是方便且有目的地获得并保存编译加载代码时的调试信息.使用该类时,请严格遵循RAII设计模式!
  */
 MADDebuggerInfo_HEAVY MADScript::ReloadScript(const MADString& _script)
 {
@@ -643,7 +643,8 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
 	int res = lua_pcall(L, (int)_arg.size(), LUA_MULTRET, 0); // 调用函数，允许多返回值
 	if (res != LUA_OK)
 	{
-		MAD_LOG_ERR("Call function: " + MADString(_funcName) +" failed!");
+		MAD_LOG_ERR("Call function: " + MADString(_funcName) +" failed!Lua error: " + MADString(lua_tostring(L,-1)));
+		lua_pop(L,1);
 		return MAD_RESCODE_FUNC_FAILED;
 	}
 
@@ -688,6 +689,159 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
 
 	// 返回调试信息或状态
 	return MAD_RESCODE_OK;
+}
+
+/**
+ * 快速调用Lua函数。
+ * 根据提供的QuickCallFuncPack参数，从Lua注册表中获取函数引用并依次推入参数，
+ * 然后尝试调用该函数。如果调用失败，会记录错误信息并通过日志输出。
+ *
+ * @param _pack 包含函数引用名和参数引用的QuickCallFuncPack结构体指针
+ */
+void MADScript::QuickCallFunction(MADQCPack _pack)
+{
+	if (!_pack)
+		return;
+	
+	QuickCallFuncPack* pack = static_cast<QuickCallFuncPack*>(_pack);
+	
+	if (pack->Owner != L)
+	{
+		MAD_LOG_ERR("Try to run a quick call pack on a different script VM,pack func name: " + pack->refName);
+		return;
+	}
+	
+	lua_getfield(L,LUA_REGISTRYINDEX,pack->refName.c_str());
+	for(const MADString& arg_ref : pack->args)
+	{
+		lua_getfield(L,LUA_REGISTRYINDEX,arg_ref.c_str());
+	}
+	if (lua_pcall(L, static_cast<int>(pack->args.size()), 0, 0) != LUA_OK) {
+		MAD_LOG_ERR("Quick call failed,lua error: " + MADString(lua_tostring(L, -1)));
+		lua_pop(L, 1);
+	}
+}
+
+/**
+ * 注册并创建一个快速调用函数包。
+ * 但需要大量的调用无需返回值但有大批量参数的函数时,使用快速调用函数包可以获得少量的性能提升(主要体现在有大量参数要入栈时).
+ * 此方法用于注册Lua中的指定函数，并为该函数预先设置一系列参数，
+ * 以便后续快速调用此函数时无需重复推入参数。它会检查函数是否存在，
+ * 并处理参数的类型与压栈，最后返回一个包含调用所需信息的QuickCallFuncPack对象。
+ *
+ * @param _funcName 要注册的Lua函数名称
+ * @param _arg 一个MADScriptDataStream对象，包含预设的参数列表及其类型
+ * @return 若函数注册成功，则返回一个指向新创建的QuickCallFuncPack结构体的指针；
+ *         若函数不存在或过程中发生错误，则返回nullptr，并通过MAD_LOG_ERR输出错误信息。
+ */
+MADQCPack MADScript::RegisterQuickCallPack(const MADString& _funcName,
+                                           const MADScriptDataStream& _arg)
+{
+	if (ScriptState != MADScriptState::Ready)
+	{
+		if (ScriptState == MADScriptState::Deleted)
+		{
+			MAD_LOG_ERR("Attempt to register quick call pack from a deleted Script!");
+		}
+		if (ScriptState == MADScriptState::Loaded)
+		{
+			MAD_LOG_ERR("Attempt to register quick call pack from a script without init,please run it directly first!");
+		}
+		return nullptr;
+	}
+	
+	lua_getglobal(L, _funcName.c_str());
+	MADString func_ref = "MAD" + _funcName;
+	if (!lua_isfunction(L, -1)) {
+		MAD_LOG_ERR("Can't find function: " + _funcName + " to register quick call pack!");
+		lua_pop(L, 1);
+		return nullptr;
+	} else {
+		lua_setfield(L, LUA_REGISTRYINDEX, func_ref.c_str());
+	}
+	
+	QuickCallFuncPack* _pack_buffer = new QuickCallFuncPack();
+	_pack_buffer->Owner = L;
+	_pack_buffer->refName = func_ref;
+	
+	MADString arg_ref_head = "MAD" + _funcName + "ARG";
+	if (!_arg.empty())
+	{
+		for (const auto& data : _arg) {
+			switch (data.type) {
+			case MADScriptValueType::LightUserdata:
+				lua_pushlightuserdata(L, data.data);
+				break;
+			case MADScriptValueType::Number:
+				lua_pushnumber(L,*static_cast<double*>(data.data));
+				break;
+			case MADScriptValueType::Boolean:
+				lua_pushboolean(L,*static_cast<bool*>(data.data));
+				break;
+			case MADScriptValueType::Integer:
+				lua_pushinteger(L,*static_cast<long long*>(data.data));
+				break;
+			case MADScriptValueType::String:
+				lua_pushstring(L, static_cast<MADString*>(data.data)->c_str());
+				break;
+			case MADScriptValueType::Unknown:
+				MAD_LOG_ERR("Try to push a unknown value to register a quick call pack from lua function: " + MADString(_funcName));
+				lua_pushnil(L);
+				break;
+			case MADScriptValueType::Nil:
+				lua_pushnil(L);
+				break;
+			}
+			MADString arg_ref_str = arg_ref_head + std::to_string(_pack_buffer->args.size());
+			lua_setfield(L, LUA_REGISTRYINDEX, arg_ref_str.c_str());
+			_pack_buffer->args.emplace_back(arg_ref_str);
+		}
+	}	
+	
+	return _pack_buffer;
+}
+
+/**
+ * 取消注册快速调用函数包。
+ * 该方法会从Lua注册表中移除与指定函数包关联的所有引用，并释放函数包所占用的资源。
+ *
+ * @param _pack 指向要取消注册的QuickCallFuncPack对象的指针。
+ */
+void MADScript::UnregisterQuickCallPack(MADQCPack _pack)
+{
+	if (!_pack) return;
+
+	QuickCallFuncPack* pack = static_cast<QuickCallFuncPack*>(_pack);
+	
+	lua_pushnil(L);
+	lua_setfield(L, LUA_REGISTRYINDEX, pack->refName.c_str());
+	
+	for(const MADString& arg_ref : pack->args)
+	{
+		lua_pushnil(L);
+		lua_setfield(L, LUA_REGISTRYINDEX, arg_ref.c_str());
+	}
+
+	delete pack;
+}
+
+/**
+ * 在Lua环境中不安全地快速调用指定的全局函数。
+ *
+ * 此方法直接从Lua状态机中获取全局函数并执行，不进行任何参数检查或错误处理。
+ * 因此，调用者需确保函数存在且调用时的Lua栈状态正确。若函数不存在或执行出错，
+ * Lua虚拟机的状态可能会受到影响，但此方法本身不会报告错误或抛出异常。
+ *
+ * 注意:
+ * - 当您确定函数_funcName存在并且无需参数和返回值的支持时,使用该函数能最大程度的获取性能支持.
+ * - 不正确的使用会导致Lua虚拟机的崩溃甚至于程序的崩溃.
+ *
+ * @param _funcName 要调用的Lua全局函数的名称。
+ */
+void MADScript::UnsafeFastCallFunction(const char* _funcName)
+{
+	lua_getglobal(L, _funcName);
+	lua_pcall(L, 0, 0, 0);
 }
 
 /**

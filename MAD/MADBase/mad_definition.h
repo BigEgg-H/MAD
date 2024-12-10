@@ -16,6 +16,3 @@
 
 /*string*/
 typedef std::string MADString;
-
-/*other*/
-typedef void* (*MADCallback)(void* _userData);

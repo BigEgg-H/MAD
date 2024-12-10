@@ -49,7 +49,7 @@ enum class MADScriptValueType { Unknown = -1, Nil = 0, Boolean = 1, LightUserdat
  * - 使用时确保正确管理 `data` 指向的内存。
  * - 枚举类型 `MADScriptValueType` 定义了支持的数据类型。
  */
-struct MADScriptData
+typedef struct MADScriptData
 {
 	void* data;
 	MADScriptValueType type;
@@ -58,9 +58,10 @@ struct MADScriptData
 		type = _type;
 		data = _data;
 	}
-};
+}MADScriptData;
 
 typedef std::vector<MADScriptData> MADScriptDataStream;
+typedef void* MADQCPack;
 
 /**
  * MADScript 类提供了管理 Lua 脚本的功能，包括加载、运行、删除脚本以及与 Lua 状态机交互的能力。
@@ -72,23 +73,32 @@ typedef std::vector<MADScriptData> MADScriptDataStream;
  */
 class MADScript
 {
-/*Create operator*/
 public:
+	/*Init script*/
 	static MADScript* CreateScript(const MADString& _script);
 	~MADScript();
 
 /*Factory method,Do NOT create it directly*/
 private:
+	/*Construct*/
 	MADScript(const MADString& _script);
+	MADScript(const MADScript& _parent) = default;
 
-/*User interface*/
+	typedef struct QuickCallFuncPack
+	{
+		MADString refName = MADString();
+		std::vector<MADString> args = std::vector<MADString>();
+	
+		void* Owner = nullptr;
+	}QuickCallFuncPack;
+	
 public:
 	/*Get Data*/
 	MADString GetScriptText();
 	MADScriptState GetScriptState();
 	lua_State* GetLuaState();
 
-	/*Init script*/
+	/*Script operator*/
 	void RunDirectly();
 	void DeleteScript();
 	MADDebuggerInfo_HEAVY ReloadScript(const MADString& _script);
@@ -110,7 +120,11 @@ public:
 	/*Function*/
 	void RegisterCFunction(const char* _funcName,MADScriptCallbackCFunction _target);
 	MADDebuggerInfo_LIGHT CallFunction(const char* _funcName,const MADScriptDataStream& _arg, MADScriptDataStream* out_ret = nullptr);
-
+	void QuickCallFunction(MADQCPack _pack);
+	MADQCPack RegisterQuickCallPack(const MADString& _funcName, const MADScriptDataStream& _arg);
+	void UnregisterQuickCallPack(MADQCPack _pack);
+	void UnsafeFastCallFunction(const char* _funcName);
+	
 	/*Lua API Function*/
 	static int CopyData(lua_State* L);
 	
@@ -124,4 +138,5 @@ private:
 
 	/*Common function*/
 	void InitLuaState();
+	
 };
