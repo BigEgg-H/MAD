@@ -702,7 +702,7 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
  *
  * @param _pack 包含函数引用名和参数引用的QuickCallFuncPack结构体指针
  */
-void MADScript::QuickCallFunction(MADQCPack _pack)
+void MADScript::QuickCallFunction(MADQuickCallPack _pack)
 {
 	if (!_pack)
 		return;
@@ -738,7 +738,7 @@ void MADScript::QuickCallFunction(MADQCPack _pack)
  * @return 若函数注册成功，则返回一个指向新创建的QuickCallFuncPack结构体的指针；
  *         若函数不存在或过程中发生错误，则返回nullptr，并通过MAD_LOG_ERR输出错误信息。
  */
-MADQCPack MADScript::RegisterQuickCallPack(const MADString& _funcName,
+MADQuickCallPack MADScript::RegisterQuickCallPack(const MADString& _funcName,
                                            const MADScriptDataStream& _arg)
 {
 	if (ScriptState != MADScriptState::Ready)
@@ -811,7 +811,7 @@ MADQCPack MADScript::RegisterQuickCallPack(const MADString& _funcName,
  *
  * @param _pack 指向要取消注册的QuickCallFuncPack对象的指针。
  */
-void MADScript::UnregisterQuickCallPack(MADQCPack _pack)
+void MADScript::UnregisterQuickCallPack(MADQuickCallPack _pack)
 {
 	if (!_pack) return;
 
@@ -838,7 +838,7 @@ void MADScript::UnregisterQuickCallPack(MADQCPack _pack)
  *
  * 注意:
  * - 当您确定函数_funcName存在并且无需参数和返回值的支持时,使用该函数能最大程度的获取性能支持.
- * - 不正确的使用会导致Lua虚拟机的崩溃甚至于程序的崩溃.
+ * - 不正确地使用会导致Lua虚拟机的崩溃甚至于程序的崩溃.
  *
  * @param _funcName 要调用的Lua全局函数的名称。
  */

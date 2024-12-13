@@ -5,15 +5,15 @@
 using namespace std;
 
 void test_err_printer(const MADString& _str) {
-	cout << "[MAD_TAPP_ERR]: " << _str << '\n';
+	cout << "[MAD_TestAPP_ERR]: " << _str << '\n';
 }
 
 void test_warn_printer(const MADString& _str) {
-	cout << "[MAD_TAPP_WARN]: " << _str << '\n';
+	cout << "[MAD_TestAPP_WARN]: " << _str << '\n';
 }
 
 void test_info_printer(const MADString&  _str) {
-	cout << "[MAD_TAPP_INFO]: " << _str << '\n';
+	cout << "[MAD_TestAPP_INFO]: " << _str << '\n';
 }
 
 #define TIME_POINT_START {auto start = std::chrono::high_resolution_clock::now();
@@ -24,7 +24,7 @@ int main()
 	/*Debugger testing*/
 	MAD_Debugger::GetInstance().SetPrinter(PrinterType::Error, test_err_printer);
 	MAD_Debugger::GetInstance().SetPrinter(PrinterType::Warning, test_warn_printer);
-	MAD_Debugger::GetInstance().SetPrinter(PrinterType::Infomation, test_info_printer);
+	MAD_Debugger::GetInstance().SetPrinter(PrinterType::Information, test_info_printer);
 
 	/*Script testing*/
 	MADScript* mad_script = MADScript::CreateScript("CopyNumberToArray(ptr,1,5,3.14,114514)");

@@ -61,7 +61,7 @@ typedef struct MADScriptData
 }MADScriptData;
 
 typedef std::vector<MADScriptData> MADScriptDataStream;
-typedef void* MADQCPack;
+typedef void* MADQuickCallPack;
 
 /**
  * MADScript 类提供了管理 Lua 脚本的功能，包括加载、运行、删除脚本以及与 Lua 状态机交互的能力。
@@ -120,9 +120,9 @@ public:
 	/*Function*/
 	void RegisterCFunction(const char* _funcName,MADScriptCallbackCFunction _target);
 	MADDebuggerInfo_LIGHT CallFunction(const char* _funcName,const MADScriptDataStream& _arg, MADScriptDataStream* out_ret = nullptr);
-	void QuickCallFunction(MADQCPack _pack);
-	MADQCPack RegisterQuickCallPack(const MADString& _funcName, const MADScriptDataStream& _arg);
-	void UnregisterQuickCallPack(MADQCPack _pack);
+	void QuickCallFunction(MADQuickCallPack _pack);
+	MADQuickCallPack RegisterQuickCallPack(const MADString& _funcName, const MADScriptDataStream& _arg);
+	void UnregisterQuickCallPack(MADQuickCallPack _pack);
 	void UnsafeFastCallFunction(const char* _funcName) const;
 	
 	/*Lua API Function*/

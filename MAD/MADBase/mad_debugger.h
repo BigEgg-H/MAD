@@ -98,7 +98,7 @@ enum class PrinterType
 	/// <summary>
 	/// ÏûÏ¢
 	/// </summary>
-	Infomation
+	Information
 };
 
 /// <summary>
@@ -135,7 +135,7 @@ public:
 		case PrinterType::Warning:
 			MAD_Warn_Printer = _target;
 			break;
-		case PrinterType::Infomation:
+		case PrinterType::Information:
 			MAD_Info_Printer = _target;
 			break;
 		}
@@ -163,7 +163,7 @@ public:
 			}
 			MAD_Warn_Printer(_target);
 			break;
-		case PrinterType::Infomation:
+		case PrinterType::Information:
 			if (!MAD_Info_Printer)
 			{
 				break;
@@ -197,4 +197,4 @@ private:
 /*MAD Err help function*/
 #define MAD_LOG_ERR(str) MAD_Debugger::GetInstance().Print(PrinterType::Error,str)
 #define MAD_LOG_WARN(str) MAD_Debugger::GetInstance().Print(PrinterType::Warning,str)
-#define MAD_LOG_INFO(str) MAD_Debugger::GetInstance().Print(PrinterType::Infomation,str)
+#define MAD_LOG_INFO(str) MAD_Debugger::GetInstance().Print(PrinterType::Information,str)
