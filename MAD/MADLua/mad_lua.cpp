@@ -145,7 +145,11 @@ void MADScript::RunDirectly()
 		MAD_LOG_ERR("Try to run a script that had already deleted!");
 		return;
 	}
-	lua_pcall(L, 0, 0, NULL);
+	if (lua_pcall(L, 0, 0, NULL) != LUA_OK)
+	{
+		MAD_LOG_WARN("Script runtime err caught in RunDirectly function.Lua Error: " + MADString(lua_tostring(L,-1)));
+		lua_pop(L,1);
+	}
 	if (ScriptState == MADScriptState::Loaded)
 	{
 		ScriptState = MADScriptState::Ready;
@@ -862,12 +866,12 @@ void MADScript::UnsafeFastCallFunction(const char* _funcName) const
 int MADScript::CopyData(lua_State* L)
 {
 	if (lua_gettop(L) < 2){
-		MAD_LOG_ERR("Illegal call for copy function.This function need 2 arg to call.");
+		MAD_LOG_ERR("[LuaScript]Illegal call for copy function.CopyData function need 2 arg to call.");
 		lua_pop(L, lua_gettop(L));
 		return 0;
 	}
 	if (!lua_islightuserdata(L,-2)){
-		MAD_LOG_ERR("Illegal call for copy function.First arg is not a valid userdata ptr (light userdata in lua, also void* in c).");
+		MAD_LOG_ERR("[LuaScript]Illegal call for copy function.First arg is not a valid userdata ptr (light userdata in lua, also void* in c).");
 		lua_pop(L,2);		
 		return 0;
 	}
@@ -882,11 +886,49 @@ int MADScript::CopyData(lua_State* L)
 		*static_cast<MADString*>(lua_touserdata(L,-2)) = MADString(lua_tostring(L, -1));
 		break;
 	default:
-		MAD_LOG_ERR("Unsupported value type for Lua copy function.Please copy boolean, number or string.");
+		MAD_LOG_ERR("[LuaScript]Unsupported value type for Lua copy function.Please copy boolean, number or string.");
 		return 0;
 	}
 
 	lua_pop(L,2);
+	
+	return 0;
+}
+
+/**
+ * (内部回调函数,禁止主动调用)
+ * 将lua栈中的数字参数复制到一个double类型的数组中。
+ * 此方法假设第一个参数是一个轻质用户数据指针，指向一个double数组的起始位置。
+ * 接下来的参数（最多至lua栈顶）应为数字，这些数字将按顺序复制到数组中。
+ *
+ * @param L Lua状态机指针
+ * @return 无返回值。若调用不合法，会通过日志输出错误信息并清理lua栈。
+ *
+ * 注意：
+ * - 至少需要2个参数：一个轻质用户数据指针和至少一个数字。
+ * - 第一个参数必须是轻质用户数据类型，指向double数组。
+ * - 数组必须足够大以容纳所有提供的数字参数。
+ */
+int MADScript::CopyNumberToArray(lua_State* L)
+{
+	if (lua_gettop(L) < 2){
+		MAD_LOG_ERR("[LuaScript]Illegal call for copy function.CopyNumberToArray function need 2 arg at least to call.");
+		lua_pop(L, lua_gettop(L));
+		return 0;
+	}
+	if (!lua_islightuserdata(L,1)){
+		MAD_LOG_ERR("[LuaScript]Illegal call for copy function.First arg is not a valid userdata ptr (light userdata in lua, also void* in c).");
+		lua_pop(L, lua_gettop(L));		
+		return 0;
+	}
+	
+	double* target_ptr = static_cast<double*>(lua_touserdata(L,1));
+	int numArgs = lua_gettop(L) - 1;
+	for (int i = 0;i < numArgs; ++i)
+	{
+		*target_ptr = lua_tonumber(L,i + 2);
+		target_ptr++;
+	}
 	
 	return 0;
 }
@@ -903,5 +945,6 @@ void MADScript::InitLuaState()
 {
 	luaL_openlibs(L);
 	lua_register(L, "CopyData", CopyData);
+	lua_register(L, "CopyNumberToArray", CopyNumberToArray);
 }
 

@@ -127,6 +127,7 @@ public:
 	
 	/*Lua API Function*/
 	static int CopyData(lua_State* L);
+	static int CopyNumberToArray(lua_State* L);
 	
 private:
 	/*Script Data*/
