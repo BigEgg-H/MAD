@@ -11,7 +11,6 @@
 
 /*STD functions*/
 #include <string>
-#include <functional>
 
 /*MAD APIs*/
 #include "mad_definition.h"

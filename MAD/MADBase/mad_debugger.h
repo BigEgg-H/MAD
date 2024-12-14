@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <functional>
+
 typedef unsigned int MADDebuggerInfo_LIGHT;
 
 /// <summary>
