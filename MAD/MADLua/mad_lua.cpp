@@ -147,7 +147,7 @@ void MADScript::RunDirectly()
 	}
 	if (lua_pcall(L, 0, 0, NULL) != LUA_OK)
 	{
-		MAD_LOG_WARN("Script runtime err caught in RunDirectly function.Lua Error: " + MADString(lua_tostring(L,-1)));
+		MAD_LOG_WARN("Script runtime err caught in RunDirectly function.Lua Error: \"" + MADString(lua_tostring(L,-1)) + "\"");
 		lua_pop(L,1);
 	}
 	if (ScriptState == MADScriptState::Loaded)
@@ -726,7 +726,7 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
 				lua_pushstring(L, static_cast<MADString*>(data.data)->c_str());
 				break;
 			case MADScriptValueType::Unknown:
-				MAD_LOG_ERR("Try to push a unknown value to call lua function: " + MADString(_funcName));
+				MAD_LOG_ERR("Try to push a unknown value to call lua function: \"" + MADString(_funcName) +"\"");
 				lua_pushnil(L);
 				break;
 			case MADScriptValueType::Nil:
@@ -739,7 +739,7 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
 	int res = lua_pcall(L, (int)_arg.size(), LUA_MULTRET, 0); // 调用函数，允许多返回值
 	if (res != LUA_OK)
 	{
-		MAD_LOG_ERR("Call function: " + MADString(_funcName) +" failed!Lua error: " + MADString(lua_tostring(L,-1)));
+		MAD_LOG_ERR("Call function: \"" + MADString(_funcName) +"\""+" failed!Lua error: \"" + MADString(lua_tostring(L,-1))+"\"");
 		lua_pop(L,1);
 		return MAD_RESCODE_FUNC_FAILED;
 	}
@@ -773,7 +773,7 @@ MADDebuggerInfo_LIGHT MADScript::CallFunction(
 				}
 				break;
 			default:
-				MAD_LOG_ERR("Unsupported return value type from Lua function: " + MADString(_funcName));
+				MAD_LOG_ERR("Unsupported return value type from Lua function: \"" + MADString(_funcName)+"\"");
 				retData = MADScriptData();
 			}
 			out_ret->push_back(retData);
@@ -803,7 +803,7 @@ void MADScript::QuickCallFunction(MADQuickCallPack _pack)
 	
 	if (pack->Owner != L)
 	{
-		MAD_LOG_ERR("Try to run a quick call pack on a different script VM,pack func name: " + pack->refName);
+		MAD_LOG_ERR("Try to run a quick call pack on a different script VM,pack func name: \"" + pack->refName+"\"");
 		return;
 	}
 	
@@ -849,7 +849,7 @@ MADQuickCallPack MADScript::RegisterQuickCallPack(const MADString& _funcName,
 	lua_getglobal(L, _funcName.c_str());
 	MADString func_ref = "MAD" + _funcName;
 	if (!lua_isfunction(L, -1)) {
-		MAD_LOG_ERR("Can't find function: " + _funcName + " to register quick call pack!");
+		MAD_LOG_ERR("Can't find function: \"" + _funcName + "\" to register quick call pack!");
 		lua_pop(L, 1);
 		return nullptr;
 	} else {
@@ -881,7 +881,7 @@ MADQuickCallPack MADScript::RegisterQuickCallPack(const MADString& _funcName,
 				lua_pushstring(L, static_cast<MADString*>(data.data)->c_str());
 				break;
 			case MADScriptValueType::Unknown:
-				MAD_LOG_ERR("Try to push a unknown value to register a quick call pack from lua function: " + MADString(_funcName));
+				MAD_LOG_ERR("Try to push a unknown value to register a quick call pack from lua function: \"" + MADString(_funcName)+"\"");
 				lua_pushnil(L);
 				break;
 			case MADScriptValueType::Nil:
