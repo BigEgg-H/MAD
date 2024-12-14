@@ -3,23 +3,12 @@
 /*                      Marisa's Atelier of Danmaku                       */
 /*                              2024/11/19                                */
 /**************************************************************************/
-/*                                                                        */
-/*                                                                        */
-/*                                                                        */
-/*                                                                        */
-/*                                                                        */
-/*                                                                        */
-/*                                                                        */
-/*                                                                        */
-/**************************************************************************/
+
 #pragma once
 
 #include "../MADBase/mad_base.h"
 #include "../MADBase/mad_math.h"
 
-/// <summary>
-/// 各个弹幕的数据储存结构体
-/// </summary>
 struct BulletInfo {
 	float AliveTime;
 
@@ -48,9 +37,6 @@ struct BulletInfo {
 	}
 };
 
-/// <summary>
-/// 刷新弹幕实例时传入的弹幕实例数据
-/// </summary>
 struct MADBulletFlushResData {
 	float Position_X, Position_Y;
 	float Dir_X, Dir_Y;

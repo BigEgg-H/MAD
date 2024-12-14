@@ -34,10 +34,5 @@ int main()
 	double* TestBuffer = new double[4]();
 	mad_script->SetValueUserPtr("ptr",TestBuffer);
 	mad_script->RunDirectly();
-
 	
-	for(int i = 0; i < 4; ++i)
-	{
-		cout << "TestBuffer[" << i << "]: " << TestBuffer[i] << "\n" ;
-	}
 }
