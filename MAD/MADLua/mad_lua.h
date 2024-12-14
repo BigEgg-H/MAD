@@ -109,6 +109,8 @@ public:
 	MADString GetValueString(const char* _valueName);
 	bool GetValueBoolean(const char* _valueName);
 	void* GetValueUserPtr(const char* _valueName);
+	MADScriptValueType GetValueType(const char* _valueName);
+	MADScriptData GetValue(const char* _valueName);
 
 	/*Set value*/
 	void SetValueInteger(const char* _valueName,const long long& _value);

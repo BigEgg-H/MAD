@@ -474,6 +474,98 @@ void* MADScript::GetValueUserPtr(const char* _valueName)
 }
 
 /**
+ * 获取指定名称的Lua值的类型。
+ * 此方法会检查Lua全局表中是否存在给定名称的值，并确定其类型。
+ *
+ * @param _valueName 要查询的Lua值的名称。
+ * @return 返回_MADScriptValueType_枚举值，表示查找值的类型。如果未找到或值为nil，则返回MADScriptValueType::Nil。
+ *
+ * 注意：
+ * - 此函数不会执行Lua代码，仅用于检查已存在的全局变量类型。
+ * - 在调用此函数后，栈顶对应的值会被弹出，以保持lua_State的一致性。
+ */
+MADScriptValueType MADScript::GetValueType(const char* _valueName)
+{
+	lua_getglobal(L, _valueName);
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		return MADScriptValueType::Nil;//没找到值或值为nil
+	}
+	else if (lua_isboolean(L, -1))
+	{
+		lua_pop(L, 1);
+		return MADScriptValueType::Boolean;
+	}
+	else if (lua_isnumber(L, -1))
+	{
+		lua_pop(L, 1);
+		return lua_isinteger(L, -1) ? MADScriptValueType::Integer : MADScriptValueType::Number;
+	}
+	else if (lua_isstring(L, -1))
+	{
+		lua_pop(L, 1);
+		return MADScriptValueType::String;
+	}
+	else if (lua_islightuserdata(L, -1))
+	{
+		lua_pop(L, 1);
+		return MADScriptValueType::LightUserdata;
+	}
+	else
+	{
+		lua_pop(L, 1);
+		return MADScriptValueType::Unknown;//MAD不支持的类型
+	}
+}
+
+/**
+ * 根据指定的值名称获取脚本中的数据。
+ * 此方法首先确定值的类型，然后根据类型安全地分配内存并复制该值。
+ * 如果尝试获取未定义类型的值，则会记录警告信息并返回一个类型为未知（Unknown）的MADScriptData结构。
+ *
+ * @param _valueName 要获取其值的变量或属性的名称
+ * @return 返回一个包含实际值及其类型的MADScriptData结构。
+ *         如果值不存在或类型无法识别，则返回的MADScriptData的data字段为nullptr，且type可能为Unknown或Nil。
+ */
+MADScriptData MADScript::GetValue(const char* _valueName)
+{
+	MADScriptValueType valueType = GetValueType(_valueName);
+	void* value = nullptr;
+
+	switch (valueType)
+	{
+	case MADScriptValueType::Integer:
+		value = new long long(GetValueInteger(_valueName));
+		break;
+	case MADScriptValueType::Number:
+		value = new double(GetValueDouble(_valueName));
+		break;
+	case MADScriptValueType::String:
+		{
+			MADString strValue = GetValueString(_valueName);
+			value = new MADString(strValue);
+			break;
+		}
+	case MADScriptValueType::Boolean:
+		value = new bool(GetValueBoolean(_valueName));
+		break;
+	case MADScriptValueType::LightUserdata:
+		value = GetValueUserPtr(_valueName);
+		break;
+	case MADScriptValueType::Unknown:
+		MAD_LOG_WARN("Try to get a value of an undefined type in MAD,Value name: " + MADString(_valueName));
+		value = nullptr;
+		break;
+	case MADScriptValueType::Nil:
+		value = nullptr;
+		break;
+	}
+
+	return {valueType, value};
+}
+
+/**
  * 设置Lua全局变量的整数值。
  *
  * 此方法将给定的整数值 `_value` 与对应的变量名 `_valueName` 设置为Lua环境中的全局变量。
