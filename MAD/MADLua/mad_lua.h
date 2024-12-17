@@ -92,6 +92,7 @@ public:
 
 	/*Script operator*/
 	void RunDirectly();
+	void CallMain();
 	void DeleteScript();
 	MADDebuggerInfo_HEAVY ReloadScript(const MADString& _script);
 

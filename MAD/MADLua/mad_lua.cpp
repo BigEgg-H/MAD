@@ -119,15 +119,15 @@ lua_State* MADScript::GetLuaState()
 }
 
 /**
- * 直接运行当前MADScript对象中的Lua脚本。
+ * 直接运行当前MADScript对象中的脚本。
+ * 根据脚本状态执行不同操作：
+ * - 若脚本已被删除，则记录错误日志并返回。
+ * - 若脚本已加载但未执行过（Ready状态），则在一个新的Lua虚拟机中运行脚本，以避免影响当前环境。
+ * - 在其他情况下，尝试直接在当前Lua环境执行脚本，并处理可能的运行时错误。
+ * 成功执行后，若脚本之前为Loaded状态，则更新其状态为Ready。
  *
- * 此方法在当前Lua环境上执行脚本，不传入参数也不期待返回值。
- * 成功执行后，若脚本状态为Loaded，则更新其状态为Ready。
- * 如果尝试运行一个已删除的脚本，则会记录警告信息并返回。
- *
- * 注意：确保脚本已正确加载且未被标记为删除状态。
- *
- * @pre 脚本应已被成功加载（ScriptState为Loaded）且未被删除。
+ * 注意：此方法不适用于频繁调用执行的场景，特别是当ScriptState为Loaded时，
+ *       因为它会为每次调用创建新的Lua虚拟机，这可能会导致性能问题。
  */
 void MADScript::RunDirectly()
 {
@@ -136,14 +136,62 @@ void MADScript::RunDirectly()
 		MAD_LOG_ERR("Try to run a script that had already deleted!");
 		return;
 	}
+	if (ScriptState == MADScriptState::Ready)
+	{
+		MAD_LOG_WARN("Call RunDirectly on a Loaded script!This will do file in a isolated VM,instead of the current one.");
+		{
+			lua_State *L_copy = luaL_newstate();
+			luaL_openlibs(L_copy);
+			int error = luaL_dostring(L_copy, ScriptText.c_str());
+			if (error) {
+				MAD_LOG_ERR("[LuaScript]Script RunDirectly error: \"" + MADString(lua_tostring(L_copy, -1)) + "\"");
+				lua_pop(L_copy, 1);
+			}
+			lua_close(L_copy);
+		}
+		return;
+	}
 	if (lua_pcall(L, 0, 0, NULL) != LUA_OK)
 	{
-		MAD_LOG_WARN("Script runtime err caught in RunDirectly function.Lua Error: \"" + MADString(lua_tostring(L,-1)) + "\"");
+		MAD_LOG_WARN("[LuaScript]Script runtime err caught in RunDirectly function.Lua Error: \"" + MADString(lua_tostring(L,-1)) + "\"");
 		lua_pop(L,1);
 	}
 	if (ScriptState == MADScriptState::Loaded)
 	{
 		ScriptState = MADScriptState::Ready;
+	}
+}
+
+/**
+ * 调用Lua脚本中的'main'函数。
+ * 此方法用于执行已准备就绪的脚本中定义的'main'函数，通常作为脚本入口点。
+ * 在调用此方法之前，确保脚本状态为Ready，否则需要先使用RunDirectly初始化脚本。
+ *
+ * @throws 异常 不直接抛出异常，但会通过日志输出错误信息。
+ *
+ * 注意事项：
+ * - 脚本必须包含一个名为'main'的全局函数作为执行入口。
+ * - 如果脚本未准备好（即ScriptState不是Ready），此方法将记录错误并返回。
+ * - 如果找不到'main'函数或在执行过程中遇到Lua运行时错误，将记录相应的警告或错误信息。
+ */
+void MADScript::CallMain()
+{
+	if (ScriptState != MADScriptState::Ready)
+	{
+		MAD_LOG_ERR("Try to call main on an unready script,please call RunDirectly to init first!");
+		return;
+	}
+	lua_getglobal(L, "main");
+	if (lua_isnil(L,-1))
+	{
+		MAD_LOG_ERR("Can't find function named 'main' as the entrance function!");
+		lua_pop(L,1);
+		return;
+	}
+	if (lua_pcall(L, 0, 0, NULL) != LUA_OK)
+	{
+		MAD_LOG_WARN("[LuaScript]Script runtime err caught in CallMain function.Lua Error: \"" + MADString(lua_tostring(L,-1)) + "\"");
+		lua_pop(L,1);
 	}
 }
 

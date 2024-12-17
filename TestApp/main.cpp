@@ -27,12 +27,12 @@ int main()
 	MAD_Debugger::GetInstance().SetPrinter(PrinterType::Information, test_info_printer);
 
 	/*Script testing*/
-	MADScript* mad_script = MADScript::CreateScript("CopyNumberToArray(ptr,1,5,3.14,114514)");
+	MADScript* mad_script = MADScript::CreateScript("CopyNumberToArray(ptr,1,1,1,1,1)");
 	if (!mad_script)
 		return 1;
 
-	double* TestBuffer = new double[4]();
+	double* TestBuffer = new double[5]();
 	mad_script->SetValueUserPtr("ptr",TestBuffer);
 	mad_script->RunDirectly();
-	
+	mad_script->CallMain();
 }
